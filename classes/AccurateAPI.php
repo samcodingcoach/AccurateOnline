@@ -35,6 +35,30 @@ class AccurateAPI {
     }
     
     /**
+     * Get current session ID
+     * @return string Current session ID
+     */
+    public function getSessionId() {
+        return $this->sessionId;
+    }
+    
+    /**
+     * Get current access token
+     * @return string Current access token
+     */
+    public function getCurrentAccessToken() {
+        return $this->accessToken;
+    }
+    
+    /**
+     * Get base URL for API calls
+     * @return string Base URL
+     */
+    public function getBaseUrl() {
+        return $this->host;
+    }
+    
+    /**
      * Make HTTP request to Accurate API
      * @param string $url URL endpoint
      * @param string $method HTTP method (GET, POST, PUT, DELETE)
@@ -180,9 +204,9 @@ class AccurateAPI {
         
         $data = [
             'grant_type' => 'authorization_code',
-            'client_id' => ACCURATE_CLIENT_ID,
-            'client_secret' => ACCURATE_CLIENT_SECRET,
-            'redirect_uri' => ACCURATE_REDIRECT_URI,
+            'client_id' => OAUTH_CLIENT_ID,
+            'client_secret' => OAUTH_CLIENT_SECRET,
+            'redirect_uri' => OAUTH_REDIRECT_URI,
             'code' => $authCode
         ];
         
@@ -203,8 +227,8 @@ class AccurateAPI {
         
         $data = [
             'grant_type' => 'refresh_token',
-            'client_id' => ACCURATE_CLIENT_ID,
-            'client_secret' => ACCURATE_CLIENT_SECRET,
+            'client_id' => OAUTH_CLIENT_ID,
+            'client_secret' => OAUTH_CLIENT_SECRET,
             'refresh_token' => $refreshToken
         ];
         
@@ -1542,6 +1566,101 @@ class AccurateAPI {
         $params = [
             'id' => $paymentTermId
         ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
+    /**
+     * Create sales order to Accurate API
+     * @param array $salesOrderData Sales order data to create
+     * @return array Response from API
+     */
+    public function createSalesOrder($salesOrderData) {
+        // Validasi data required
+        $requiredFields = ['customerNo', 'branchId'];
+        foreach ($requiredFields as $field) {
+            if (!isset($salesOrderData[$field]) || empty($salesOrderData[$field])) {
+                return [
+                    'success' => false,
+                    'error' => "Field {$field} is required",
+                    'data' => null
+                ];
+            }
+        }
+
+        // Check for detail items
+        $hasItems = false;
+        foreach ($salesOrderData as $key => $value) {
+            if (strpos($key, 'detailItem') === 0 && strpos($key, 'itemNo') !== false) {
+                $hasItems = true;
+                break;
+            }
+        }
+
+        if (!$hasItems) {
+            return [
+                'success' => false,
+                'error' => 'At least one item is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/sales-order/save.do';
+        
+        // Prepare data for API - use the exact format that works
+        $postData = [];
+        
+        // Copy all data directly - the format is already correct from the frontend
+        foreach ($salesOrderData as $key => $value) {
+            $postData[$key] = $value;
+        }
+        
+        // Ensure required fields are set
+        if (!isset($postData['transDate']) || empty($postData['transDate'])) {
+            $postData['transDate'] = date('d/m/Y');
+        }
+        
+        $headers = [
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
+
+        return $this->makeRequest($url, 'POST', http_build_query($postData), $headers);
+    }
+
+    /**
+     * Get item selling price based on price category
+     * @param string $itemNo Item number/code
+     * @param string $branchName Branch name (optional)
+     * @param string $priceCategoryName Price category name (optional)
+     * @return array Response from API
+     */
+    public function getItemSellingPrice($itemNo, $branchName = '', $priceCategoryName = '') {
+        // Validasi item number required
+        if (empty($itemNo)) {
+            return [
+                'success' => false,
+                'error' => 'Item number is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/item/get-selling-price.do';
+        
+        // Prepare parameters
+        $params = [
+            'no' => $itemNo
+        ];
+        
+        // Add optional parameters if provided
+        if (!empty($branchName)) {
+            $params['branchName'] = $branchName;
+        }
+        
+        if (!empty($priceCategoryName)) {
+            $params['priceCategoryName'] = $priceCategoryName;
+        }
         
         $url .= '?' . http_build_query($params);
         
