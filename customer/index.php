@@ -104,27 +104,29 @@ function getCustomerTypeBadge($customer) {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <?php 
-                                        if (!empty($customer['createDate'])) {
+                                        // Try both 'createdDate' and 'createDate' field names from API
+                        $dateField = $customer['createdDate'] ?? $customer['createDate'] ?? null;
+                        if (!empty($dateField)) {
                                             try {
                                                 // Parse date dengan berbagai format yang mungkin
-                                                $createDate = DateTime::createFromFormat('d/m/Y H:i:s', $customer['createDate']);
+                                                $createDate = DateTime::createFromFormat('d/m/Y H:i:s', $dateField);
                                                 
                                                 // Coba format lain jika gagal
                                                 if (!$createDate) {
-                                                    $createDate = DateTime::createFromFormat('Y-m-d H:i:s', $customer['createDate']);
+                                                    $createDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateField);
                                                 }
                                                 
                                                 if (!$createDate) {
-                                                    $createDate = DateTime::createFromFormat('d/m/Y', $customer['createDate']);
+                                                    $createDate = DateTime::createFromFormat('d/m/Y', $dateField);
                                                 }
                                                 
                                                 if ($createDate) {
                                                     echo $createDate->format('d/m/Y');
                                                 } else {
-                                                    echo htmlspecialchars($customer['createDate']);
+                                                    echo htmlspecialchars($dateField);
                                                 }
                                             } catch (Exception $e) {
-                                                echo htmlspecialchars($customer['createDate']);
+                                                echo htmlspecialchars($dateField);
                                             }
                                         } else {
                                             echo '<span class="text-gray-400 italic">-</span>';
@@ -166,6 +168,9 @@ function getCustomerTypeBadge($customer) {
                 <p><strong>Data Source:</strong> Customer List API (/list.do)</p>
                 <p><strong>API Success:</strong> <?php echo isset($result) && $result['success'] ? 'Yes' : 'No'; ?></p>
                 <p><strong>Customers Found:</strong> <?php echo count($customers); ?></p>
+                <?php if (!empty($customers)): ?>
+                    <p><strong>First Customer Fields:</strong> <?php echo implode(', ', array_keys($customers[0])); ?></p>
+                <?php endif; ?>
                 <?php if (isset($result['error'])): ?>
                     <p><strong>Error:</strong> <?php echo htmlspecialchars($result['error']); ?></p>
                 <?php endif; ?>

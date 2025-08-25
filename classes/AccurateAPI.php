@@ -793,7 +793,7 @@ class AccurateAPI {
         $defaultParams = [
             'sp.page' => 1,
             'sp.pageSize' => 100,
-            'fields' => 'id,name,no,customerNo,email,mobilePhone,phone,address,createdDate,lastUpdate,balanceList'
+            'fields' => 'id,name,no,customerNo,email,mobilePhone,phone,address,createDate,createdDate,lastUpdate,balanceList'
         ];
         
         // Handle backward compatibility - jika params adalah integer (limit)
