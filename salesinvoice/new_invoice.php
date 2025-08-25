@@ -1030,13 +1030,26 @@ if ($showDetails && $so_id) {
             currentItemName = itemName;
             currentQuantity = quantity;
             currentItemCode = itemCode;
-            currentWarehouseName = warehouseName || '';
+            
+            // Improved warehouse name handling with fallback
+            if (warehouseName && warehouseName.trim() !== '') {
+                currentWarehouseName = warehouseName.trim();
+            } else {
+                // Fallback: try to get warehouse name from the sales order data
+                const soDetails = <?php echo json_encode($salesOrderDetail['detailItem'] ?? []); ?>;
+                const currentItem = soDetails.find(item => item.id == itemId);
+                currentWarehouseName = (currentItem && currentItem.warehouse && currentItem.warehouse.name) 
+                    ? currentItem.warehouse.name 
+                    : 'Warehouse Utama'; // Default fallback
+            }
             
             document.getElementById('modalItemName').textContent = itemName;
-            document.getElementById('modalWarehouse').textContent = warehouseName || 'Tidak diketahui';
+            document.getElementById('modalWarehouse').textContent = currentWarehouseName || 'Tidak diketahui';
             document.getElementById('modalQuantity').textContent = quantity;
             document.getElementById('maxQuantity').textContent = quantity;
             document.getElementById('serialModal').style.display = 'block';
+            
+            console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
             
             // Load existing data for this item if available
             if (itemSerialData[itemId]) {
@@ -1239,7 +1252,14 @@ if ($showDetails && $so_id) {
                             );
                             
                             if (serialInOtherWarehouse) {
-                                alert(`Serial number "${serialValue}" ditemukan di warehouse "${serialInOtherWarehouse.warehouse.name}", bukan di "${currentWarehouseName}".`);
+                                const foundWarehouse = serialInOtherWarehouse.warehouse ? serialInOtherWarehouse.warehouse.name : 'Warehouse tidak diketahui';
+                                const expectedWarehouse = currentWarehouseName || 'Warehouse tidak diketahui';
+                                
+                                if (!currentWarehouseName || currentWarehouseName.trim() === '') {
+                                    alert(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", tapi warehouse tujuan tidak diketahui. Silakan pilih warehouse yang benar untuk item ini.`);
+                                } else {
+                                    alert(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", bukan di "${expectedWarehouse}".`);
+                                }
                             } else {
                                 alert(`Serial number "${serialValue}" tidak ditemukan untuk item "${currentItemCode}" atau sudah habis.`);
                             }

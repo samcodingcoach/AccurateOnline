@@ -1666,5 +1666,32 @@ class AccurateAPI {
         
         return $this->makeRequest($url, 'GET');
     }
+
+    /**
+     * Get serial number report per warehouse
+     * @param string $itemNo Item number/code
+     * @return array Response from API
+     */
+    public function getSerialNumberReport($itemNo) {
+        // Validasi item number required
+        if (empty($itemNo)) {
+            return [
+                'success' => false,
+                'error' => 'Item number is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/report/serial-number-per-warehouse.do';
+        
+        // Prepare parameters
+        $params = [
+            'itemNo' => $itemNo
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
 }
 ?>
