@@ -36,11 +36,17 @@ try {
     
     // Validate required fields
     if (empty($inputData['customerNo'])) {
+        // Log the received data for debugging
+        error_log('CustomerNo validation failed. Available fields: ' . implode(', ', array_keys($inputData)));
+        error_log('CustomerNo value: ' . ($inputData['customerNo'] ?? 'NOT_SET'));
         throw new Exception('customerNo required');
     }
     if (empty($inputData['branchId'])) {
         throw new Exception('branchId required');
     }
+    
+    // Log customer and branch info for debugging
+    error_log('Processing Sales Order - Customer: ' . $inputData['customerNo'] . ', Branch: ' . $inputData['branchId']);
     
     // Check for detail items
     $hasItems = false;
@@ -60,7 +66,33 @@ try {
     $api->setSessionId($sessionId);
     $response = $api->createSalesOrder($inputData);
     
-    echo json_encode($response);
+    // Enhanced response handling
+    if ($response['success']) {
+        // Success case
+        echo json_encode([
+            'success' => true,
+            'message' => 'Sales Order berhasil disimpan',
+            'data' => $response['data'] ?? null
+        ]);
+    } else {
+        // Error case - extract proper error message
+        $errorMessage = 'Unknown error';
+        
+        if (!empty($response['error'])) {
+            $errorMessage = $response['error'];
+        } elseif (isset($response['data']['d']) && is_array($response['data']['d'])) {
+            $errorMessage = implode(', ', $response['data']['d']);
+        } elseif (isset($response['data']['message'])) {
+            $errorMessage = $response['data']['message'];
+        }
+        
+        echo json_encode([
+            'success' => false,
+            'message' => $errorMessage,
+            'http_code' => $response['http_code'] ?? 0,
+            'debug_data' => $response['data'] ?? null
+        ]);
+    }
     
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

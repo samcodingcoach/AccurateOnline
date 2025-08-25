@@ -1,4 +1,4 @@
-﻿﻿﻿﻿<?php
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<?php
 /**
  * Halaman Input Sales Order Baru
  * File: /salesorder/new_so.php
@@ -1295,6 +1295,7 @@ require_once __DIR__ . '/../bootstrap.php';
         
         // Generate data yang akan di-POST ke endpoint /save.do
         function generatePostData() {
+            console.log('=== GENERATE POST DATA DEBUG ===');
             console.log('generatePostData called with selectedItems:', selectedItems);
             console.log('selectedItems.length:', selectedItems.length);
             console.log('selectedCustomer object:', selectedCustomer);
@@ -1303,8 +1304,15 @@ require_once __DIR__ . '/../bootstrap.php';
             // Debug: Check what fields are available
             if (selectedCustomer) {
                 console.log('selectedCustomer keys:', Object.keys(selectedCustomer));
+                console.log('selectedCustomer.no:', selectedCustomer.no);
                 console.log('selectedCustomer.customerNo:', selectedCustomer.customerNo);
                 console.log('selectedCustomer.id:', selectedCustomer.id);
+                
+                // Check hidden field value too
+                const hiddenFieldValue = document.getElementById('selectedCustomerNo').value;
+                console.log('Hidden field selectedCustomerNo value:', hiddenFieldValue);
+            } else {
+                console.log('selectedCustomer is null!');
             }
             
             if (selectedBranch) {
@@ -1314,9 +1322,22 @@ require_once __DIR__ . '/../bootstrap.php';
                 console.log('selectedBranch.branchName:', selectedBranch.branchName);
             }
             
+            // Determine customerNo value with priority order: customerNo > no > id
+            let customerNoValue = '';
+            if (selectedCustomer) {
+                customerNoValue = selectedCustomer.customerNo || selectedCustomer.no || selectedCustomer.id || '';
+                console.log('Customer field priority check:');
+                console.log('  - selectedCustomer.customerNo:', selectedCustomer.customerNo);
+                console.log('  - selectedCustomer.no:', selectedCustomer.no);
+                console.log('  - selectedCustomer.id:', selectedCustomer.id);
+                console.log('  - Final customerNo value:', customerNoValue);
+            } else {
+                console.log('selectedCustomer is null, customerNoValue will be empty');
+            }
+            
             const postData = {
-                // Data Customer - gunakan customerNo atau id yang tersedia
-                customerNo: selectedCustomer ? (selectedCustomer.customerNo || selectedCustomer.id || '') : '',
+                // Data Customer - gunakan 'no' field (customer number dari Accurate API)
+                customerNo: customerNoValue,
                 
                 // Data Branch - gunakan id (harus integer untuk Accurate API)
                 branchId: selectedBranch ? selectedBranch.id : '',
@@ -1339,13 +1360,23 @@ require_once __DIR__ . '/../bootstrap.php';
                           formatDateForStore(document.getElementById('deliveryDate').value) : '',
             };
             
-            // Debug: Check if required fields are set
+            // Final validation logging
+            console.log('=== POST DATA VALIDATION ===');
             console.log('postData.customerNo:', postData.customerNo);
             console.log('postData.branchId:', postData.branchId);
             
             if (!postData.customerNo) {
                 console.error('VALIDATION ERROR: customerNo is empty!');
-                console.log('selectedCustomer:', selectedCustomer);
+                console.log('selectedCustomer full object:', selectedCustomer);
+                console.log('selectedCustomer.no:', selectedCustomer?.no);
+                console.log('selectedCustomer.customerNo:', selectedCustomer?.customerNo);
+                console.log('selectedCustomer.id:', selectedCustomer?.id);
+                
+                // Check if dropdown has value
+                const dropdownValue = document.getElementById('customerSelect').value;
+                const hiddenValue = document.getElementById('selectedCustomerNo').value;
+                console.log('Dropdown customerSelect value:', dropdownValue);
+                console.log('Hidden selectedCustomerNo value:', hiddenValue);
             }
             
             if (!postData.branchId) {
@@ -1365,6 +1396,7 @@ require_once __DIR__ . '/../bootstrap.php';
             });
             
             console.log('Final postData:', postData);
+            console.log('=== END GENERATE POST DATA DEBUG ===');
             
             return postData;
         }
@@ -1394,7 +1426,40 @@ require_once __DIR__ . '/../bootstrap.php';
                         customersData = data.data.customers.d || [];
                         console.log('Loaded customers count:', customersData.length); // Debug log
                         
+                        // DEBUG: Log first few customers to see structure
                         if (customersData.length > 0) {
+                            console.log('=== CUSTOMER DATA STRUCTURE DEBUG ===');
+                            console.log('First customer sample:', customersData[0]);
+                            console.log('First customer keys:', Object.keys(customersData[0]));
+                            
+                            if (customersData.length > 1) {
+                                console.log('Second customer sample:', customersData[1]);
+                            }
+                            
+                            // Check for customer with ID 250 specifically
+                            const customer250 = customersData.find(c => 
+                                c.customerNo === '250' || c.no === '250' || c.id === '250' || 
+                                c.customerNo === 250 || c.no === 250 || c.id === 250
+                            );
+                            
+                            if (customer250) {
+                                console.log('FOUND Customer 250:', customer250);
+                                console.log('Customer 250 keys:', Object.keys(customer250));
+                            } else {
+                                console.log('Customer 250 NOT FOUND in loaded data');
+                                console.log('Available customer numbers:', 
+                                    customersData.map(c => {
+                                        return {
+                                            customerNo: c.customerNo,
+                                            no: c.no,
+                                            id: c.id,
+                                            name: c.name
+                                        }
+                                    })
+                                );
+                            }
+                            console.log('=== END CUSTOMER DATA STRUCTURE DEBUG ===');
+                            
                             populateCustomerSelect();
                             console.log('Customer select populated successfully'); // Debug log
                         } else {
@@ -1626,11 +1691,14 @@ require_once __DIR__ . '/../bootstrap.php';
             }
             
             customersData.forEach((customer, index) => {
-                console.log('Adding customer:', index, customer.name, customer.customerNo, 'priceCategory:', customer.priceCategory); // Debug log
+                console.log('Adding customer:', index, customer.name, customer.customerNo, customer.no, 'priceCategory:', customer.priceCategory); // Debug log
                 
                 const option = document.createElement('option');
-                option.value = customer.customerNo || customer.id;
-                option.textContent = `${customer.name || 'N/A'} (${customer.customerNo || customer.id || 'N/A'})`;
+                // Use customerNo as primary, fallback to no, then id
+                option.value = customer.customerNo || customer.no || customer.id;
+                // Display shows customerNo or no, whichever is available
+                const displayNumber = customer.customerNo || customer.no || customer.id || 'N/A';
+                option.textContent = `${customer.name || 'N/A'} (${displayNumber})`;
                 select.appendChild(option);
             });
             
@@ -1727,8 +1795,9 @@ require_once __DIR__ . '/../bootstrap.php';
                 
                 // Filter customers based on search term
                 const filteredCustomers = customersData.filter(customer => 
-                    customer.name && customer.name.toLowerCase().includes(searchTerm) ||
+                    (customer.name && customer.name.toLowerCase().includes(searchTerm)) ||
                     (customer.customerNo && customer.customerNo.toLowerCase().includes(searchTerm)) ||
+                    (customer.no && customer.no.toLowerCase().includes(searchTerm)) ||
                     (customer.email && customer.email.toLowerCase().includes(searchTerm))
                 );
                 
@@ -1753,7 +1822,7 @@ require_once __DIR__ . '/../bootstrap.php';
                         
                         div.innerHTML = `
                             <strong>${customer.name || 'N/A'}</strong><br>
-                            <small>No: ${customer.customerNo || 'N/A'} | ${customer.email || 'No email'}${priceCategoryInfo}</small>
+                            <small>No: ${customer.customerNo || customer.no || 'N/A'} | ${customer.email || 'No email'}${priceCategoryInfo}</small>
                         `;
                         
                         div.addEventListener('click', function() {
@@ -1786,17 +1855,42 @@ require_once __DIR__ . '/../bootstrap.php';
             // Handle customer select change
             document.getElementById('customerSelect').addEventListener('change', function() {
                 const customerValue = this.value;
-                console.log('Customer select changed:', customerValue); // Debug log
+                console.log('=== CUSTOMER SELECT CHANGE DEBUG ===');
+                console.log('Customer select changed to value:', customerValue); // Debug log
+                console.log('Type of customerValue:', typeof customerValue);
                 
                 if (customerValue) {
-                    const customer = customersData.find(c => (c.customerNo || c.id) == customerValue);
+                    console.log('Searching for customer in customersData with value:', customerValue);
+                    console.log('Available customers for matching:');
+                    customersData.forEach((c, index) => {
+                        console.log(`  [${index}] customerNo: ${c.customerNo}, no: ${c.no}, id: ${c.id}, name: ${c.name}`);
+                    });
+                    
+                    // Try different matching approaches - prioritize customerNo
+                    let customer = customersData.find(c => (c.customerNo || c.no || c.id) == customerValue);
+                    if (!customer) {
+                        console.log('First search failed, trying alternative matching:');
+                        customer = customersData.find(c => 
+                            c.customerNo == customerValue || 
+                            c.no == customerValue || 
+                            c.id == customerValue
+                        );
+                    }
+                    
+                    console.log('Found customer:', customer);
+                    
                     if (customer) {
+                        console.log('Calling selectCustomer with:', customer);
                         selectCustomer(customer);
                         document.getElementById('customerSearch').value = '';
+                    } else {
+                        console.error('Customer not found with value:', customerValue);
                     }
                 } else {
+                    console.log('Empty value selected, clearing customer');
                     clearSelectedCustomer();
                 }
+                console.log('=== END CUSTOMER SELECT CHANGE DEBUG ===');
             });
             
             // Handle branch select change
@@ -1834,12 +1928,29 @@ require_once __DIR__ . '/../bootstrap.php';
         function selectCustomer(customer) {
             selectedCustomer = customer;
             
-            // Update hidden field dengan customerNo
-            document.getElementById('selectedCustomerNo').value = customer.customerNo || customer.id;
+            // COMPREHENSIVE DEBUG: Log customer object structure
+            console.log('=== CUSTOMER SELECTION DEBUG ===');
+            console.log('Full customer object:', customer);
+            console.log('Available customer keys:', Object.keys(customer));
+            console.log('customer.no:', customer.no);
+            console.log('customer.customerNo:', customer.customerNo);
+            console.log('customer.id:', customer.id);
+            console.log('customer.name:', customer.name);
             
-            // Update form controls
-            document.getElementById('customerSelect').value = customer.customerNo || customer.id;
+            // Determine customerNo value with priority order
+            let customerNoValue = customer.customerNo || customer.no || customer.id || '';
+            console.log('Final customerNo value selected:', customerNoValue);
+            
+            // Update hidden field dengan customerNo (use 'no' field primarily)
+            document.getElementById('selectedCustomerNo').value = customerNoValue;
+            
+            // Update form controls  
+            document.getElementById('customerSelect').value = customerNoValue;
             document.getElementById('customerSearch').value = customer.name;
+            
+            // DEBUG: Verify hidden field was set correctly
+            console.log('Hidden field selectedCustomerNo after setting:', document.getElementById('selectedCustomerNo').value);
+            console.log('Select customerSelect after setting:', document.getElementById('customerSelect').value);
             
             // Hide dropdown
             document.getElementById('customerDropdown').style.display = 'none';
@@ -1865,6 +1976,7 @@ require_once __DIR__ . '/../bootstrap.php';
             
             console.log('Customer selected:', customer); // Debug log
             console.log('Hidden field value:', document.getElementById('selectedCustomerNo').value); // Debug log
+            console.log('=== END CUSTOMER SELECTION DEBUG ===');
         }
         
         // Select branch function

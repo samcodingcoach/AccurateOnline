@@ -140,12 +140,12 @@ class AccurateAPI {
         
         $errorMessage = null;
         if (!$success) {
-            if (is_array($decodedResponse) && isset($decodedResponse['error'])) {
+            if (is_array($decodedResponse) && isset($decodedResponse['d']) && is_array($decodedResponse['d']) && !empty($decodedResponse['d'])) {
+                $errorMessage = implode(', ', $decodedResponse['d']);
+            } elseif (is_array($decodedResponse) && isset($decodedResponse['error'])) {
                 $errorMessage = $decodedResponse['error'];
             } elseif (is_array($decodedResponse) && isset($decodedResponse['message'])) {
                 $errorMessage = $decodedResponse['message'];
-            } elseif (is_array($decodedResponse) && isset($decodedResponse['d']) && is_array($decodedResponse['d']) && !empty($decodedResponse['d'])) {
-                $errorMessage = implode(', ', $decodedResponse['d']);
             } else {
                 $errorMessage = "HTTP $httpCode error";
             }
@@ -793,7 +793,7 @@ class AccurateAPI {
         $defaultParams = [
             'sp.page' => 1,
             'sp.pageSize' => 100,
-            'fields' => 'id,name,no,email,mobilePhone,phone,address,createdDate,lastUpdate,balanceList'
+            'fields' => 'id,name,no,customerNo,email,mobilePhone,phone,address,createdDate,lastUpdate,balanceList'
         ];
         
         // Handle backward compatibility - jika params adalah integer (limit)

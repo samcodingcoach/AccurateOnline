@@ -56,10 +56,23 @@ try {
         // Get customer data
         $customers = $result['data']['d'] ?? [];
         
-        // Enrich customer data with priceCategory information
+        // Enrich customer data with priceCategory information and ensure field mapping
         $enrichedCustomers = [];
         foreach ($customers as $customer) {
             $enrichedCustomer = $customer;
+            
+            // Ensure both 'no' and 'customerNo' fields are available for compatibility
+            // Priority: customerNo > no > id
+            if (!isset($enrichedCustomer['customerNo']) && isset($enrichedCustomer['no'])) {
+                $enrichedCustomer['customerNo'] = $enrichedCustomer['no'];
+            } elseif (!isset($enrichedCustomer['customerNo']) && isset($enrichedCustomer['id'])) {
+                $enrichedCustomer['customerNo'] = $enrichedCustomer['id'];
+            }
+            
+            // Also ensure 'no' field is available as fallback
+            if (!isset($enrichedCustomer['no']) && isset($enrichedCustomer['customerNo'])) {
+                $enrichedCustomer['no'] = $enrichedCustomer['customerNo'];
+            }
             
             // Get customer detail to fetch priceCategory
             if (isset($customer['id'])) {
