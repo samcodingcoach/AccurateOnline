@@ -8,23 +8,18 @@ $vendors = [];
 if ($result['success'] && isset($result['data']['d'])) {
     $vendors = $result['data']['d'];
     
-    // Untuk setiap vendor, ambil detail untuk mendapatkan kategori
-    foreach ($vendors as &$vendor) {
-        $detailResult = $api->getVendorDetail($vendor['id']);
-        if ($detailResult['success'] && isset($detailResult['data']['category'])) {
-            $vendor['category'] = $detailResult['data']['category'];
-        }
-    }
+    // getVendorList() already returns category data, no need for additional API calls
+    // This fixes the duplication issue and improves performance
 }
 
 // Helper function untuk mendapatkan kategori dari data vendor
 function getVendorCategory($vendor) {
-    // Coba ambil dari category.name
+    // Since getVendorList() already includes category data, use it directly
     if (isset($vendor['category']['name'])) {
         return $vendor['category']['name'];
     }
     
-    // Coba field kategori lainnya
+    // Fallback untuk field kategori lainnya jika tidak ada
     if (isset($vendor['vendorGroup'])) {
         return $vendor['vendorGroup'];
     }
