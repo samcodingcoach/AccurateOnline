@@ -1,0 +1,13 @@
+{
+    "s": true,
+    "d": [
+        "Proses Berhasil Dilakukan"
+    ],
+    "dataVersion": 20250721105116,
+    "licenseEnd": "25\/08\/2025",
+    "session": "6d5cd7c5-092b-497c-b29a-d9105b1f7173",
+    "host": "https:\/\/zeus.accurate.id",
+    "admin": true,
+    "accessibleUntil": "30\/08\/2025",
+    "trial": true
+}

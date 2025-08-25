@@ -1,0 +1,15 @@
+{
+    "access_token": "b2ccac16-852d-4bcc-8e29-0dbc4da99655",
+    "token_type": "bearer",
+    "refresh_token": "a01f4b02-1881-4801-ac85-43d3e37ad189",
+    "expires_in": 1295999,
+    "scope": "branch_view fixed_asset_view item_transfer_view access_privilege_view employee_view sales_order_save purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view stock_mutation_history_view customer_view sales_order_view sales_receipt_view payment_term_view shipment_view item_transfer_save purchase_order_view sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view",
+    "user": {
+        "referrer": null,
+        "name": "Samsu",
+        "nickname": "shem1990@gmail.com",
+        "mobile": null,
+        "id": 926636,
+        "email": "shem1990@gmail.com"
+    }
+}
