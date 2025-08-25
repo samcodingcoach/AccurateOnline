@@ -1,4 +1,4 @@
-﻿<?php
+﻿﻿﻿﻿<?php
 /**
  * Halaman Input Sales Order Baru
  * File: /salesorder/new_so.php
@@ -1500,12 +1500,23 @@ require_once __DIR__ . '/../bootstrap.php';
             fetch('../payterm/list_term.php?limit=100')
                 .then(response => {
                     console.log('Payment Terms API response status:', response.status); // Debug log
+                    console.log('Payment Terms API response headers:', [...response.headers.entries()]); // Debug log
                     if (!response.ok) {
                         throw new Error('HTTP error! status: ' + response.status);
                     }
-                    return response.json();
+                    return response.text(); // Get as text first to debug
                 })
-                .then(data => {
+                .then(responseText => {
+                    console.log('Payment Terms API raw response:', responseText); // Debug log
+                    
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('Failed to parse JSON:', e);
+                        throw new Error('Invalid JSON response: ' + e.message);
+                    }
+                    
                     console.log('Payment Terms API Response:', data); // Debug log
                     
                     if (data.success && data.data) {
@@ -1515,14 +1526,21 @@ require_once __DIR__ . '/../bootstrap.php';
                         // Check if data.data.paymentTerms exists
                         if (data.data.paymentTerms && data.data.paymentTerms.d && Array.isArray(data.data.paymentTerms.d)) {
                             paymentTerms = data.data.paymentTerms.d;
+                            console.log('Found payment terms in paymentTerms.d structure');
                         }
                         // Check if data.data.d exists (direct Accurate API format)
                         else if (data.data.d && Array.isArray(data.data.d)) {
                             paymentTerms = data.data.d;
+                            console.log('Found payment terms in d structure');
                         }
                         // Check if data.data is array directly
                         else if (Array.isArray(data.data)) {
                             paymentTerms = data.data;
+                            console.log('Found payment terms as direct array');
+                        }
+                        else {
+                            console.warn('No payment terms found in expected structures');
+                            console.log('Available data keys:', Object.keys(data.data));
                         }
                         
                         console.log('Processed payment terms:', paymentTerms.length); // Debug log
@@ -1539,11 +1557,13 @@ require_once __DIR__ . '/../bootstrap.php';
                         }
                     } else {
                         console.error('Payment Terms API error:', data);
+                        console.error('API returned success=false or no data field');
                         loadPaymentTermFallback();
                     }
                 })
                 .catch(error => {
                     console.error('Payment Terms fetch error:', error);
+                    console.error('Error details:', error.message);
                     loadPaymentTermFallback();
                 });
         }
@@ -1576,9 +1596,9 @@ require_once __DIR__ . '/../bootstrap.php';
             
             // Fallback dengan payment terms dummy untuk testing
             paymentTermsData = [
-                { id: 1, name: 'Cash', netDays: 0, suspended: false, defaultTerm: true },
-                { id: 2, name: 'NET 30', netDays: 30, suspended: false, defaultTerm: false },
-                { id: 3, name: 'C.O.D', netDays: 0, suspended: false, cashOnDelivery: true }
+                { id: 1, name: 'Cash', dueDays: 0, suspended: false, defaultTerm: true },
+                { id: 2, name: 'NET 30', dueDays: 30, suspended: false, defaultTerm: false },
+                { id: 3, name: 'C.O.D', dueDays: 0, suspended: false, cashOnDelivery: true }
             ];
             
             populatePaymentTermSelect();
@@ -1660,7 +1680,12 @@ require_once __DIR__ . '/../bootstrap.php';
                 
                 // Create display text with additional info
                 let displayText = term.name;
-                if (term.netDays && term.netDays > 0) {
+                // Use dueDays from Accurate API (not netDays)
+                if (term.dueDays && term.dueDays > 0) {
+                    displayText += ` (${term.dueDays} hari)`;
+                }
+                // Handle old format for backward compatibility
+                else if (term.netDays && term.netDays > 0) {
                     displayText += ` (${term.netDays} hari)`;
                 }
                 if (term.cashOnDelivery) {
@@ -1673,7 +1698,7 @@ require_once __DIR__ . '/../bootstrap.php';
                 option.textContent = displayText;
                 select.appendChild(option);
                 
-                console.log('Added payment term:', term.name, 'netDays:', term.netDays); // Debug log
+                console.log('Added payment term:', term.name, 'dueDays:', term.dueDays, 'netDays:', term.netDays); // Debug log
             });
             
             console.log('Populated', paymentTermsData.length, 'payment terms'); // Debug log

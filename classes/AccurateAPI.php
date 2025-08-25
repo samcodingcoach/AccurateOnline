@@ -339,7 +339,8 @@ class AccurateAPI {
             'purchase_invoice' => '/accurate/api/purchase-invoice/list.do',
             'journal' => '/accurate/api/journal/list.do',
             'report' => '/accurate/api/report/list.do',
-            'item_category' => '/accurate/api/item-category/list.do'
+            'item_category' => '/accurate/api/item-category/list.do',
+            'payment_term' => '/accurate/api/payment-term/list.do'
         ];
     }
 
@@ -486,7 +487,8 @@ class AccurateAPI {
             'purchase_invoice_view' => 'testPurchaseInvoiceView',
             'journal_view' => 'testJournalView',
             'report_view' => 'testReportView',
-            'item_category_view' => 'testItemCategoryView'
+            'item_category_view' => 'testItemCategoryView',
+            'payment_term_view' => 'testPaymentTermView'
         ];
         
         if (!isset($testMethods[$scope])) {
@@ -581,6 +583,10 @@ class AccurateAPI {
 
     public function testItemCategoryView() {
         return $this->makeGetRequest('/accurate/api/item-category/list.do', ['sp.pageSize' => 1]);
+    }
+
+    public function testPaymentTermView() {
+        return $this->makeGetRequest('/accurate/api/payment-term/list.do', ['sp.pageSize' => 1]);
     }
 
     /**
@@ -1480,6 +1486,66 @@ class AccurateAPI {
         ];
 
         return $this->makeRequest($url, 'POST', http_build_query($postData), $headers);
+    }
+
+    /**
+     * Get payment term list dengan pagination
+     * @param mixed $params Parameters untuk filter (array) atau limit (int)
+     * @param int $page Page number jika parameter pertama adalah limit
+     * @return array Response dari API
+     */
+    public function getPaymentTermList($params = [], $page = null) {
+        $url = $this->host . '/accurate/api/payment-term/list.do';
+        
+        // Default parameters
+        $defaultParams = [
+            'sp.page' => 1,
+            'sp.pageSize' => 100,
+            'fields' => 'id,name,description,dueDays,discountDays,discountRate,suspended,createDate'
+        ];
+        
+        // Handle backward compatibility - jika params adalah integer (limit)
+        if (is_int($params) && $page !== null) {
+            $params = [
+                'sp.pageSize' => $params,
+                'sp.page' => $page
+            ];
+        } elseif (!is_array($params)) {
+            $params = [];
+        }
+        
+        // Merge dengan params yang diberikan
+        $params = array_merge($defaultParams, $params);
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
+    /**
+     * Get payment term detail berdasarkan ID
+     * @param int $paymentTermId ID payment term
+     * @return array Response dari API
+     */
+    public function getPaymentTermDetail($paymentTermId) {
+        // Validasi ID payment term
+        if (empty($paymentTermId)) {
+            return [
+                'success' => false,
+                'message' => 'Payment term ID is required',
+                'data' => null
+            ];
+        }
+        
+        $url = $this->host . '/accurate/api/payment-term/detail.do';
+        
+        $params = [
+            'id' => $paymentTermId
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
     }
 }
 ?>
