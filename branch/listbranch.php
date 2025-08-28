@@ -9,9 +9,8 @@ require_once __DIR__ . '/../bootstrap.php';
 // Inisialisasi API class
 $api = new AccurateAPI();
 
-// Cek apakah ada parameter ID atau nama branch
+// Cek apakah ada parameter ID branch
 $branchId = $_GET['id'] ?? $_POST['id'] ?? null;
-$branchName = $_GET['branchName'] ?? $_POST['branchName'] ?? null;
 
 if ($branchId) {
     // Get branch detail by ID
@@ -34,10 +33,6 @@ if ($branchId) {
             $result['message'] = 'Branch ID tidak valid. Gunakan ID yang valid dari daftar.';
         }
     }
-} elseif ($branchName) {
-    // Get branch detail by name
-    $result = $api->getBranchByName($branchName);
-    $message = "Detail branch dengan nama: $branchName";
 } else {
     // Get branch list (tanpa parameter)
     $result = $api->getBranchList();
