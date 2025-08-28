@@ -318,18 +318,10 @@ class AccurateAPI {
             ];
         }
         
-        // Gunakan endpoint yang benar dari dokumentasi
-        $url = 'https://account.accurate.id/api/open-db.do';
+        // Gunakan endpoint yang benar dari dokumentasi (GET dengan URL parameter)
+        $url = 'https://account.accurate.id/api/open-db.do?id=' . $databaseId;
         
-        $data = [
-            'id' => $databaseId
-        ];
-        
-        $headers = [
-            'Content-Type: application/x-www-form-urlencoded'
-        ];
-        
-        return $this->makeRequest($url, 'POST', http_build_query($data), $headers);
+        return $this->makeRequest($url, 'GET');
     }
 
     /**

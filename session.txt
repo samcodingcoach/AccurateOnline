@@ -4,10 +4,10 @@
         "Proses Berhasil Dilakukan"
     ],
     "dataVersion": 20250721105116,
-    "licenseEnd": "25\/08\/2025",
-    "session": "6d5cd7c5-092b-497c-b29a-d9105b1f7173",
+    "licenseEnd": "28\/09\/2025",
+    "session": "9ec49c80-f542-409b-9160-045b37e270ad",
     "host": "https:\/\/zeus.accurate.id",
     "admin": true,
-    "accessibleUntil": "30\/08\/2025",
+    "accessibleUntil": "03\/10\/2025",
     "trial": true
 }

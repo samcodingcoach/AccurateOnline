@@ -849,9 +849,15 @@ try {
                             </div>
                         </div>
                         <div class="mt-5">
-                            <div class="flex space-x-2">
+                            <div class="flex flex-wrap gap-2">
                                 <button id="openDbListModal" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
                                     <i class="fas fa-list mr-1"></i> List DB
+                                </button>
+                                <button id="openDbSelectModal" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <i class="fas fa-mouse-pointer mr-1"></i> Select DB
+                                </button>
+                                <button id="openLatestDb" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
+                                    <i class="fas fa-rocket mr-1"></i> Auto Open Latest
                                 </button>
                                 <button id="openDbOpenModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                     <i class="fas fa-folder-open mr-1"></i> Open DB
@@ -1044,6 +1050,78 @@ try {
         </div>
     </div>
 
+    <!-- Modal Database Selection -->
+    <div id="dbSelectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" style="backdrop-filter: blur(4px);">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+                    <div class="flex items-center">
+                        <i class="fas fa-database text-green-600 mr-3 text-lg"></i>
+                        <h3 class="text-xl font-semibold text-gray-900">Select Database</h3>
+                    </div>
+                    <button id="closeDbSelectModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Modal Content -->
+                <div class="px-6 py-4 overflow-y-auto">
+                    <!-- Loading State -->
+                    <div id="dbSelectLoading" class="text-center py-8">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mb-4"></div>
+                        <p class="text-gray-600">Loading databases...</p>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="dbSelectError" class="hidden text-center py-8">
+                        <i class="fas fa-exclamation-triangle text-red-400 text-4xl mb-4"></i>
+                        <h4 class="text-lg font-medium text-gray-900 mb-2">Failed to Load Databases</h4>
+                        <p id="dbSelectErrorMessage" class="text-gray-600 mb-4"></p>
+                        <button id="retryDbSelect" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-retry mr-2"></i>Retry
+                        </button>
+                    </div>
+                    
+                    <!-- Database List -->
+                    <div id="dbSelectContent" class="hidden">
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-lg font-medium text-gray-900">Available Databases</h4>
+                                <div class="flex items-center space-x-2">
+                                    <button id="openLatestDbFromModal" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        <i class="fas fa-rocket mr-1"></i>Auto Open Latest
+                                    </button>
+                                    <button id="refreshDbList" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        <i class="fas fa-sync-alt mr-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Database Cards -->
+                        <div id="databaseList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Database cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="px-6 py-3 border-t border-gray-200 flex justify-between items-center flex-shrink-0">
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Select a database to open it automatically
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="closeDbSelectModalFooter" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-times mr-2"></i>Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         console.log('JavaScript is loading...');
@@ -1174,6 +1252,7 @@ try {
             // Get all modal elements after DOM is ready
             const jsonModal = document.getElementById('jsonModal');
             const statusModal = document.getElementById('statusModal');
+            const dbSelectModal = document.getElementById('dbSelectModal');
             const openItemApiModal = document.getElementById('openItemApiModal');
             const openVendorApiModal = document.getElementById('openVendorApiModal');
             const openBranchApiModal = document.getElementById('openBranchApiModal');
@@ -1190,11 +1269,15 @@ try {
             const openItemTransferApiModal = document.getElementById('openItemTransferApiModal');
             const openPurchaseOrderApiModal = document.getElementById('openPurchaseOrderApiModal');
             const openDbListModal = document.getElementById('openDbListModal');
+            const openDbSelectModal = document.getElementById('openDbSelectModal');
+            const openLatestDb = document.getElementById('openLatestDb');
             const openDbOpenModal = document.getElementById('openDbOpenModal');
             const checkAllEndpoints = document.getElementById('checkAllEndpoints');
             const openStatusModal = document.getElementById('openStatusModal');
             const closeJsonModal = document.getElementById('closeJsonModal');
             const closeStatusModal = document.getElementById('closeStatusModal');
+            const closeDbSelectModal = document.getElementById('closeDbSelectModal');
+            const closeDbSelectModalFooter = document.getElementById('closeDbSelectModalFooter');
             const refreshStatus = document.getElementById('refreshStatus');
             const retryJson = document.getElementById('retryJson');
             const copyUrl = document.getElementById('copyUrl');
@@ -1362,6 +1445,22 @@ try {
                 });
             }
             
+            // Database Selection Modal Event Listeners
+            if (openDbSelectModal) {
+                openDbSelectModal.addEventListener('click', () => {
+                    console.log('Opening database selection modal...');
+                    dbSelectModal.classList.remove('hidden');
+                    loadDatabaseList();
+                });
+            }
+            
+            if (openLatestDb) {
+                openLatestDb.addEventListener('click', () => {
+                    console.log('Auto-opening latest database...');
+                    openLatestDatabase();
+                });
+            }
+            
             // API Status Check Event Listeners
             if (checkAllEndpoints) {
                 checkAllEndpoints.addEventListener('click', () => {
@@ -1387,6 +1486,20 @@ try {
                 closeStatusModal.addEventListener('click', function() {
                     console.log('Close status modal clicked!');
                     statusModal.classList.add('hidden');
+                });
+            }
+            
+            if (closeDbSelectModal) {
+                closeDbSelectModal.addEventListener('click', function() {
+                    console.log('Close database select modal clicked!');
+                    dbSelectModal.classList.add('hidden');
+                });
+            }
+            
+            if (closeDbSelectModalFooter) {
+                closeDbSelectModalFooter.addEventListener('click', function() {
+                    console.log('Close database select modal footer clicked!');
+                    dbSelectModal.classList.add('hidden');
                 });
             }
             
@@ -1431,6 +1544,15 @@ try {
                 });
             }
             
+            if (dbSelectModal) {
+                dbSelectModal.addEventListener('click', (e) => {
+                    if (e.target === dbSelectModal) {
+                        console.log('Database select modal backdrop clicked!');
+                        dbSelectModal.classList.add('hidden');
+                    }
+                });
+            }
+            
             // Close modal with ESC key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -1440,6 +1562,10 @@ try {
                     if (statusModal && !statusModal.classList.contains('hidden')) {
                         console.log('ESC pressed - closing status modal');
                         statusModal.classList.add('hidden');
+                    }
+                    if (dbSelectModal && !dbSelectModal.classList.contains('hidden')) {
+                        console.log('ESC pressed - closing database select modal');
+                        dbSelectModal.classList.add('hidden');
                     }
                 }
             });
@@ -1846,6 +1972,226 @@ try {
                     console.error('Token countdown error:', error);
                 });
         }
+        
+        // Database Management Functions
+        async function loadDatabaseList() {
+            console.log('Loading database list...');
+            
+            const dbSelectLoading = document.getElementById('dbSelectLoading');
+            const dbSelectError = document.getElementById('dbSelectError');
+            const dbSelectContent = document.getElementById('dbSelectContent');
+            const dbSelectErrorMessage = document.getElementById('dbSelectErrorMessage');
+            const databaseList = document.getElementById('databaseList');
+            
+            // Show loading state
+            dbSelectLoading.classList.remove('hidden');
+            dbSelectError.classList.add('hidden');
+            dbSelectContent.classList.add('hidden');
+            
+            try {
+                const response = await fetch(DB_LIST_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.d) {
+                    const databases = data.data.d;
+                    
+                    // Clear existing content
+                    databaseList.innerHTML = '';
+                    
+                    // Sort databases: non-expired first, then by ID (newest first)
+                    databases.sort((a, b) => {
+                        if (a.expired !== b.expired) {
+                            return a.expired ? 1 : -1; // Non-expired first
+                        }
+                        return b.id - a.id; // Newest ID first
+                    });
+                    
+                    databases.forEach((db, index) => {
+                        const card = createDatabaseCard(db, index === 0 && !db.expired);
+                        databaseList.appendChild(card);
+                    });
+                    
+                    // Show content
+                    dbSelectLoading.classList.add('hidden');
+                    dbSelectError.classList.add('hidden');
+                    dbSelectContent.classList.remove('hidden');
+                    
+                } else {
+                    throw new Error('Invalid response format');
+                }
+                
+            } catch (error) {
+                console.error('Error loading database list:', error);
+                dbSelectLoading.classList.add('hidden');
+                dbSelectError.classList.remove('hidden');
+                dbSelectContent.classList.add('hidden');
+                dbSelectErrorMessage.textContent = error.message;
+            }
+        }
+        
+        function createDatabaseCard(db, isLatest = false) {
+            const card = document.createElement('div');
+            card.className = `relative border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                db.expired ? 'border-red-200 bg-red-50' : 
+                isLatest ? 'border-green-500 bg-green-50 ring-2 ring-green-200' : 
+                'border-gray-200 bg-white hover:border-blue-300'
+            }`;
+            
+            const statusBadge = db.expired ? 
+                '<span class="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full">EXPIRED</span>' :
+                isLatest ? '<span class="absolute top-2 right-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">LATEST</span>' :
+                '<span class="absolute top-2 right-2 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">ACTIVE</span>';
+            
+            card.innerHTML = `
+                ${statusBadge}
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        ${db.logoUrl ? 
+                            `<img src="${db.logoUrl}" alt="Logo" class="w-12 h-12 rounded-full border-2 border-gray-200">` :
+                            '<div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center"><i class="fas fa-database text-white"></i></div>'
+                        }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-lg font-semibold text-gray-900 truncate">${db.alias}</h4>
+                        <div class="mt-1 space-y-1">
+                            <p class="text-sm text-gray-600">ID: ${db.id}</p>
+                            <p class="text-sm text-gray-600">License End: ${db.licenseEnd}</p>
+                            <p class="text-sm text-gray-600">Access Until: ${db.accessibleUntil}</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                ${db.trial ? '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Trial</span>' : ''}
+                                ${db.admin ? '<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Admin</span>' : ''}
+                                ${db.demo ? '<span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">Demo</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end space-x-2">
+                    ${!db.expired ? 
+                        `<button onclick="openDatabase(${db.id})" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors">
+                            <i class="fas fa-play mr-1"></i>Open Database
+                        </button>` :
+                        '<button disabled class="px-3 py-1 bg-gray-300 text-gray-500 text-sm rounded cursor-not-allowed">Expired</button>'
+                    }
+                </div>
+            `;
+            
+            // Add click handler for the entire card (except buttons)
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button') && !db.expired) {
+                    openDatabase(db.id);
+                }
+            });
+            
+            return card;
+        }
+        
+        async function openDatabase(databaseId) {
+            console.log('Opening database:', databaseId);
+            
+            try {
+                showToast('Opening database...');
+                
+                const response = await fetch(`${DB_OPEN_URL}?id=${databaseId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`Database ${databaseId} opened successfully!`);
+                    
+                    // Close the modal
+                    const dbSelectModal = document.getElementById('dbSelectModal');
+                    if (dbSelectModal) {
+                        dbSelectModal.classList.add('hidden');
+                    }
+                    
+                    // Show success information
+                    console.log('Database opened:', data.data);
+                    
+                    // Optionally refresh the page after a delay to reflect the new session
+                    setTimeout(() => {
+                        if (confirm('Database opened successfully! Would you like to refresh the page to see the updated session info?')) {
+                            window.location.reload();
+                        }
+                    }, 1000);
+                    
+                } else {
+                    throw new Error(data.message || 'Failed to open database');
+                }
+                
+            } catch (error) {
+                console.error('Error opening database:', error);
+                showToast(`Error: ${error.message}`);
+            }
+        }
+        
+        async function openLatestDatabase() {
+            console.log('Auto-opening latest database...');
+            
+            try {
+                showToast('Loading latest database...');
+                
+                const response = await fetch(DB_LIST_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.d) {
+                    const databases = data.data.d;
+                    
+                    // Sort databases: non-expired first, then by ID (newest first)
+                    databases.sort((a, b) => {
+                        if (a.expired !== b.expired) {
+                            return a.expired ? 1 : -1; // Non-expired first
+                        }
+                        return b.id - a.id; // Newest ID first
+                    });
+                    
+                    // Find the latest non-expired database
+                    const latestDb = databases.find(db => !db.expired);
+                    
+                    if (latestDb) {
+                        await openDatabase(latestDb.id);
+                    } else {
+                        throw new Error('No active (non-expired) databases found');
+                    }
+                    
+                } else {
+                    throw new Error('Invalid response format');
+                }
+                
+            } catch (error) {
+                console.error('Error opening latest database:', error);
+                showToast(`Error: ${error.message}`);
+            }
+        }
+        
+        // Add retry and refresh handlers for database modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const retryDbSelect = document.getElementById('retryDbSelect');
+            const refreshDbList = document.getElementById('refreshDbList');
+            const openLatestDbFromModal = document.getElementById('openLatestDbFromModal');
+            
+            if (retryDbSelect) {
+                retryDbSelect.addEventListener('click', loadDatabaseList);
+            }
+            
+            if (refreshDbList) {
+                refreshDbList.addEventListener('click', loadDatabaseList);
+            }
+            
+            if (openLatestDbFromModal) {
+                openLatestDbFromModal.addEventListener('click', openLatestDatabase);
+            }
+        });
     </script>
 </body>
 </html>
