@@ -207,12 +207,33 @@ $currentScopes = array_filter($currentScopes, function($scope) {
 // Reindex array untuk memastikan tidak ada gap
 $currentScopes = array_values($currentScopes);
 
-// Auto-detect current base URL untuk ngrok yang berubah-ubah
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+// Auto-detect current base URL untuk ngrok dan tunneling services lainnya
+// Check multiple sources for HTTPS detection
+$isHttps = false;
+
+// Standard HTTPS detection
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $isHttps = true;
+}
+
+// Check proxy headers (common with tunneling services)
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $isHttps = true;
+}
+
+// Check if port is 443 (HTTPS port)
+if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443') {
+    $isHttps = true;
+}
+
+$protocol = $isHttps ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 
-// Force HTTPS untuk ngrok URLs
-if (strpos($host, '.ngrok-free.app') !== false || strpos($host, '.ngrok.io') !== false) {
+// Force HTTPS untuk tunneling services (ngrok, pinggy, dll)
+if (strpos($host, '.ngrok-free.app') !== false || 
+    strpos($host, '.ngrok.io') !== false ||
+    strpos($host, '.pinggy.link') !== false ||
+    strpos($host, '.loca.lt') !== false) {
     $protocol = 'https';
 }
 
