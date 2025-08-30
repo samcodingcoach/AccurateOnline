@@ -3,6 +3,28 @@ require_once __DIR__ . '/../bootstrap.php';
 
 $api = new AccurateAPI();
 $sessionInfo = $api->getSessionInfo();
+
+// Fetch item categories
+$categories = [];
+// Construct the URL dynamically
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+$url = $protocol . $host . '/nuansa/itemcategory/listcategory.php';
+
+// Use a stream context to pass the session ID in headers if required, or just fetch
+// For simplicity, assuming the listcategory.php does not require session for now.
+// If it does, a more robust cURL request would be needed.
+$categories_json = @file_get_contents($url);
+if ($categories_json) {
+    $categories_data = json_decode($categories_json, true);
+    if (isset($categories_data['data']['d'])) {
+        $categories = $categories_data['data']['d'];
+        // Sort categories by name alphabetically
+        usort($categories, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -12,6 +34,8 @@ $sessionInfo = $api->getSessionInfo();
     <title>Tambah Item Baru - Nuansa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .form-container {
             background: white;
@@ -67,6 +91,23 @@ $sessionInfo = $api->getSessionInfo();
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        /* Style for Select2 */
+        .select2-container .select2-selection--single {
+            height: 42px; /* Match tailwind input height */
+            border-radius: 0.5rem; /* Match tailwind rounded-lg */
+            border: 1px solid #d1d5db; /* Match tailwind border-gray-300 */
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 40px;
+            padding-left: 12px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
+        .select2-container--open .select2-dropdown {
+            border-radius: 0.5rem;
+            border-color: #3b82f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -111,8 +152,15 @@ $sessionInfo = $api->getSessionInfo();
                     
                     <div>
                         <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                        <input type="text" id="kategori" name="itemCategoryName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <select id="kategori" name="itemCategoryName" required
+                                class="w-full">
+                            <option value=""></option>
+                            <?php foreach ($categories as $category):
+                                echo '<option value="' . htmlspecialchars($category['name']) . '">';
+                                echo htmlspecialchars($category['name']);
+                                echo '</option>';
+                            endforeach; ?>
+                        </select>
                     </div>
                     
                     <div>
@@ -193,9 +241,38 @@ $sessionInfo = $api->getSessionInfo();
         </div>
     </main>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
-        const SESSION_ID = '<?php echo htmlspecialchars($sessionInfo['session_id'] ?? ''); ?>';
+        const SESSION_ID = 
         let savedItemNo = null;
+
+        $(document).ready(function() {
+            // Initialize Select2
+            $('#kategori').select2({
+                placeholder: "Pilih atau cari kategori",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Setup number formatting untuk price inputs
+            const priceInputs = ['price1', 'price2', 'price3'];
+            
+            priceInputs.forEach(id => {
+                const input = document.getElementById(id);
+                
+                input.addEventListener('input', function() {
+                    formatNumber(this);
+                });
+                
+                input.addEventListener('blur', function() {
+                    formatNumber(this);
+                });
+            });
+        });
         
         // Number formatter untuk input price
         function formatNumber(input) {
@@ -214,23 +291,6 @@ $sessionInfo = $api->getSessionInfo();
         function parseNumber(value) {
             return value.replace(/[^\d]/g, '');
         }
-        
-        // Setup number formatting untuk price inputs
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceInputs = ['price1', 'price2', 'price3'];
-            
-            priceInputs.forEach(id => {
-                const input = document.getElementById(id);
-                
-                input.addEventListener('input', function() {
-                    formatNumber(this);
-                });
-                
-                input.addEventListener('blur', function() {
-                    formatNumber(this);
-                });
-            });
-        });
         
         // Toggle S/N status display
         document.getElementById('aktifSN').addEventListener('change', function() {
@@ -257,7 +317,7 @@ $sessionInfo = $api->getSessionInfo();
                 
                 const itemData = {
                     no: document.getElementById('kodeBarang').value,
-                    itemCategoryName: document.getElementById('kategori').value,
+                    itemCategoryName: $('#kategori').val(), // Get value from Select2
                     name: document.getElementById('namaBarang').value,
                     unit1Name: document.getElementById('satuan').value,
                     manageSN: document.getElementById('aktifSN').checked ? 'True' : 'False'
