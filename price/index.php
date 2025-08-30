@@ -8,10 +8,10 @@ $categories = [];
 if ($result['success'] && isset($result['data']['d'])) {
     $categories = $result['data']['d'];
     
-    // Sort categories by ID ascending if available
+    // Sort categories by name alphabetically
     if (is_array($categories)) {
         usort($categories, function($a, $b) {
-            return ($a['id'] ?? 0) <=> ($b['id'] ?? 0);
+            return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
         });
     }
 }
@@ -105,3 +105,4 @@ if ($result['success'] && isset($result['data']['d'])) {
     </main>
 </body>
 </html>
+
