@@ -250,6 +250,28 @@ if ($units_json) {
                         <input type="text" id="price3" value="0" 
                                class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                     </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 4</label>
+                        <input type="text" id="price4" value="0" 
+                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 5</label>
+                        <input type="text" id="price5" value="0" 
+                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 6</label>
+                        <input type="text" id="price6" value="0" 
+                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 7</label>
+                        <input type="text" id="price7" value="0" 
+                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
                 </div>
                 
                 <div id="priceLoading" class="hidden mt-4 text-center">
@@ -288,7 +310,7 @@ if ($units_json) {
             });
 
             // Setup number formatting untuk price inputs
-            const priceInputs = ['price1', 'price2', 'price3'];
+            const priceInputs = ['price1', 'price2', 'price3', 'price4', 'price5', 'price6', 'price7'];
             
             priceInputs.forEach(id => {
                 const input = document.getElementById(id);
@@ -374,10 +396,14 @@ if ($units_json) {
                 // STEP 2: Save Price Levels
                 itemLoading.innerHTML = '<div class="inline-flex items-center px-4 py-2 text-orange-600"><i class="fas fa-spinner fa-spin mr-2"></i>Saving price levels...</div>';
                 
-                const prices = [
+                                const prices = [
                     { id: '50', price: parseNumber(document.getElementById('price1').value) },
-                    { id: '51', price: parseNumber(document.getElementById('price2').value) },
-                    { id: '100', price: parseNumber(document.getElementById('price3').value) }
+                    { id: '200', price: parseNumber(document.getElementById('price2').value) },
+                    { id: '250', price: parseNumber(document.getElementById('price3').value) },
+                    { id: '151', price: parseNumber(document.getElementById('price4').value) },
+                    { id: '300', price: parseNumber(document.getElementById('price5').value) },
+                    { id: '350', price: parseNumber(document.getElementById('price6').value) },
+                    { id: '301', price: parseNumber(document.getElementById('price7').value) }
                 ];
                 
                 let successCount = 0;
@@ -429,7 +455,7 @@ if ($units_json) {
                 
                 // Show final results dengan detail
                 const totalAttempted = prices.filter(p => p.price !== '0' && p.price !== '' && p.price !== 0).length;
-                const totalSkipped = 3 - totalAttempted;
+                const totalSkipped = 7 - totalAttempted;
                 
                 // Show detailed results
                 let detailsHtml = '<div class="mt-3 text-sm"><strong>Details:</strong><br>' + results.join('<br>') + '</div>';

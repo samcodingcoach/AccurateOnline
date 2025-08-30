@@ -208,8 +208,8 @@ try {
         error_log('Price Level ID provided: ' . $sellingPriceData['id']);
         
         // Special debug for ID 100
-        if ($sellingPriceData['id'] == '100') {
-            error_log('*** DEBUGGING PRICE LEVEL 2 (ID=100) ***');
+        if ($sellingPriceData['id'] == '200') {
+            error_log('*** DEBUGGING PRICE LEVEL 2 (ID=200) ***');
             error_log('Full request data: ' . print_r($requestData, true));
             error_log('Selling price data to be sent: ' . print_r($sellingPriceData, true));
         }
@@ -247,8 +247,8 @@ try {
     $result = $api->saveSellingPrice($sellingPriceData);
     
     // Special debug for ID 100
-    if (isset($sellingPriceData['id']) && $sellingPriceData['id'] == '100') {
-        error_log('*** PRICE LEVEL 2 (ID=100) API RESULT ***');
+    if (isset($sellingPriceData['id']) && $sellingPriceData['id'] == '200') {
+        error_log('*** PRICE LEVEL 2 (ID=200) API RESULT ***');
         error_log('Success: ' . ($result['success'] ? 'YES' : 'NO'));
         error_log('Full result: ' . print_r($result, true));
     }

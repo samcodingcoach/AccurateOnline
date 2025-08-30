@@ -1542,7 +1542,7 @@ public function getUnitList($limit = 25, $page = 1) {
      */
     public function saveSellingPrice($sellingPriceData) {
         // Validasi data required
-        $requiredFields = ['salesAdjustmentType', 'id', 'detailItem'];
+        $requiredFields = ['salesAdjustmentType', 'detailItem'];
         foreach ($requiredFields as $field) {
             if (!isset($sellingPriceData[$field])) {
                 return [
@@ -1555,12 +1555,41 @@ public function getUnitList($limit = 25, $page = 1) {
 
         $url = $this->host . '/accurate/api/sellingprice-adjustment/save.do';
         
-        // Prepare data for API
+        // Prepare data for API - mengikuti format yang berhasil di Postman
         $postData = [
             'salesAdjustmentType' => $sellingPriceData['salesAdjustmentType'],
-            'id' => $sellingPriceData['id'],
             'transDate' => $sellingPriceData['transDate'] ?? date('d/m/Y')
         ];
+        
+        // Add priceCategoryName berdasarkan ID yang diberikan
+        if (isset($sellingPriceData['id']) && !empty($sellingPriceData['id'])) {
+            // Mapping ID ke nama kategori harga
+            $priceCategoryMapping = [
+                '50' => 'Level1',
+                '200' => 'Level2', 
+                '250' => 'Level3',
+                '151' => 'Level4',
+                '300' => 'Level5',
+                '350' => 'Level6',
+                '301' => 'Level7'
+            ];
+            
+            if (isset($priceCategoryMapping[$sellingPriceData['id']])) {
+                $postData['priceCategoryName'] = $priceCategoryMapping[$sellingPriceData['id']];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => "Invalid price category ID: {$sellingPriceData['id']}",
+                    'data' => null
+                ];
+            }
+        } else {
+            return [
+                'success' => false,
+                'error' => "Price category ID is required",
+                'data' => null
+            ];
+        }
 
         // Add detail items
         foreach ($sellingPriceData['detailItem'] as $index => $detail) {
