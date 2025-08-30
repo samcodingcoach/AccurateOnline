@@ -155,11 +155,11 @@ if ($categories_json) {
                         <select id="kategori" name="itemCategoryName" required
                                 class="w-full">
                             <option value=""></option>
-                            <?php foreach ($categories as $category):
-                                echo '<option value="' . htmlspecialchars($category['name']) . '">';
-                                echo htmlspecialchars($category['name']);
-                                echo '</option>';
-                            endforeach; ?>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?php echo htmlspecialchars($category['name']); ?>">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     
@@ -247,7 +247,7 @@ if ($categories_json) {
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        const SESSION_ID = 
+        const SESSION_ID = '<?php echo htmlspecialchars($sessionInfo["session_id"] ?? ""); ?>';
         let savedItemNo = null;
 
         $(document).ready(function() {
