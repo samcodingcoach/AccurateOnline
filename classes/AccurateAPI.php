@@ -830,6 +830,19 @@ class AccurateAPI {
     }
 
     /**
+ * Get list of units dengan pagination
+ * @param int $limit Jumlah data per halaman
+ * @param int $page Nomor halaman
+ * @return array Response dari API
+ */
+public function getUnitList($limit = 25, $page = 1) {
+    $url = $this->host . '/accurate/api/unit/list.do';
+    $params = ['sp.pageSize' => $limit, 'sp.page' => $page];
+    $url .= '?' . http_build_query($params);
+    return $this->makeRequest($url);
+}
+
+    /**
      * Get list of customers dengan pagination
      * @param mixed $params Parameter tambahan untuk query (array) atau limit (int)
      * @param int $page Page number jika parameter pertama adalah limit
