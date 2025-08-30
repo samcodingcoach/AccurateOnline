@@ -1215,7 +1215,8 @@ public function getUnitList($limit = 25, $page = 1) {
         // Default parameters untuk pagination
         $defaultParams = [
             'sp.page' => 1,
-            'sp.pageSize' => 100
+            'sp.pageSize' => 100,
+            'fields' => 'id,name'
         ];
         
         // Merge dengan params yang diberikan
