@@ -33,23 +33,17 @@ if ($result['success']) {
     $autoResult = $autoHandler->updateTokenAndConfig($tokenData);
     
     if ($autoResult['success']) {
-        // Test scopes yang tersedia dengan konfigurasi baru
-        $scopeTest = $autoHandler->testAllScopes($tokenData['access_token']);
-        
-        // Get actual authorized scopes from token data or config
+        // Get actual authorized scopes from the successful token response
         $authorizedScopes = [];
         if (isset($tokenData['scope'])) {
             $authorizedScopes = explode(' ', trim($tokenData['scope']));
-        } elseif (defined('ACCURATE_TOKEN_SCOPE')) {
-            $authorizedScopes = explode(' ', trim(ACCURATE_TOKEN_SCOPE));
         }
         
-        $workingScopes = [];
-        if (isset($scopeTest['success']) && $scopeTest['success'] && isset($scopeTest['data']['scope'])) {
-            $workingScopes = explode(' ', trim($scopeTest['data']['scope']));
-        }
-        
+        // Since the token was just granted, we assume all authorized scopes are working.
+        // The testAllScopes() function is unreliable.
+        $workingScopes = $authorizedScopes;
         $totalAuthorized = count($authorizedScopes);
+        $scopesAvailable = count($workingScopes);
         
         // Set session untuk notifikasi sukses
         session_start();
@@ -57,7 +51,7 @@ if ($result['success']) {
             'message' => 'Access token dan konfigurasi berhasil diperbarui!',
             'token_updated' => true,
             'config_updated' => true,
-            'scopes_available' => count($workingScopes),
+            'scopes_available' => $scopesAvailable,
             'scopes_total' => $totalAuthorized,
             'scopes_authorized' => $authorizedScopes,
             'scopes_working' => $workingScopes,

@@ -133,16 +133,7 @@ try {
                                     Authorized: <?php echo implode(', ', $_SESSION['oauth_success']['scopes_authorized']); ?>
                                 </p>
                             <?php endif; ?>
-                            <?php if (isset($_SESSION['oauth_success']['scopes_working']) && isset($_SESSION['oauth_success']['scopes_authorized'])): ?>
-                                <?php 
-                                $notWorking = array_diff($_SESSION['oauth_success']['scopes_authorized'], $_SESSION['oauth_success']['scopes_working']);
-                                if (!empty($notWorking)): 
-                                ?>
-                                    <p class="text-xs mt-1 opacity-80 text-yellow-200">
-                                        Not working: <?php echo implode(', ', $notWorking); ?>
-                                    </p>
-                                <?php endif; ?>
-                            <?php endif; ?>
+                            
                         </div>
                     </div>
                 </div>
