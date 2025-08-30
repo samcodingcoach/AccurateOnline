@@ -12,11 +12,11 @@ define('OAUTH_REDIRECT_URI', 'https://rbjjv-36-83-62-101.a.free.pinggy.link/nuan
 // Konfigurasi API Accurate
 define('ACCURATE_API_HOST', 'https://zeus.accurate.id');
 define('ACCURATE_AUTH_HOST', 'https://account.accurate.id');
-define('ACCURATE_ACCESS_TOKEN', 'b2ccac16-852d-4bcc-8e29-0dbc4da99655');
-define('ACCURATE_TOKEN_SCOPE', 'branch_view fixed_asset_view item_transfer_view access_privilege_view employee_view sales_order_save purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view stock_mutation_history_view customer_view sales_order_view sales_receipt_view payment_term_view shipment_view item_transfer_save purchase_order_view sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view unit_view');
-define('ACCURATE_REFRESH_TOKEN', 'a01f4b02-1881-4801-ac85-43d3e37ad189');
-define('ACCURATE_SESSION_ID', '9ec49c80-f542-409b-9160-045b37e270ad');
-define('ACCURATE_DATABASE_ID', '2028904');
+define('ACCURATE_ACCESS_TOKEN', '38dcf19d-d0fd-4a30-a11c-821b65775fde');
+define('ACCURATE_TOKEN_SCOPE', 'unit_save branch_view unit_delete tax_view fixed_asset_view item_transfer_view access_privilege_view sales_order_save employee_view purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view unit_view stock_mutation_history_view customer_view vendor_category_view sales_order_view sales_receipt_view shipment_view payment_term_view purchase_order_view item_transfer_save sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view');
+define('ACCURATE_REFRESH_TOKEN', '446b82a9-f0df-4839-8bd4-a94d99e25a84');
+define('ACCURATE_SESSION_ID', '6d5cd7c5-092b-497c-b29a-d9105b1f7173');
+define('ACCURATE_DATABASE_ID', '1963082');
 
 // Konfigurasi aplikasi
 define('APP_NAME', 'Nuansa Accurate API');

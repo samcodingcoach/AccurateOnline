@@ -44,7 +44,11 @@ if ($result['success']) {
             $authorizedScopes = explode(' ', trim(ACCURATE_TOKEN_SCOPE));
         }
         
-        $workingScopes = count(array_filter($scopeTest['scopes']));
+        $workingScopes = [];
+        if (isset($scopeTest['success']) && $scopeTest['success'] && isset($scopeTest['data']['scope'])) {
+            $workingScopes = explode(' ', trim($scopeTest['data']['scope']));
+        }
+        
         $totalAuthorized = count($authorizedScopes);
         
         // Set session untuk notifikasi sukses
@@ -53,10 +57,10 @@ if ($result['success']) {
             'message' => 'Access token dan konfigurasi berhasil diperbarui!',
             'token_updated' => true,
             'config_updated' => true,
-            'scopes_available' => $workingScopes,
+            'scopes_available' => count($workingScopes),
             'scopes_total' => $totalAuthorized,
             'scopes_authorized' => $authorizedScopes,
-            'scopes_working' => array_keys(array_filter($scopeTest['scopes'])),
+            'scopes_working' => $workingScopes,
             'timestamp' => date('Y-m-d H:i:s')
         ];
         

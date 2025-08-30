@@ -1,9 +1,9 @@
 {
-    "access_token": "b2ccac16-852d-4bcc-8e29-0dbc4da99655",
+    "access_token": "38dcf19d-d0fd-4a30-a11c-821b65775fde",
     "token_type": "bearer",
-    "refresh_token": "a01f4b02-1881-4801-ac85-43d3e37ad189",
+    "refresh_token": "446b82a9-f0df-4839-8bd4-a94d99e25a84",
     "expires_in": 1295999,
-    "scope": "branch_view fixed_asset_view item_transfer_view access_privilege_view employee_view sales_order_save purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view stock_mutation_history_view customer_view sales_order_view sales_receipt_view payment_term_view shipment_view item_transfer_save purchase_order_view sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view",
+    "scope": "unit_save branch_view unit_delete tax_view fixed_asset_view item_transfer_view access_privilege_view sales_order_save employee_view purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view unit_view stock_mutation_history_view customer_view vendor_category_view sales_order_view sales_receipt_view shipment_view payment_term_view purchase_order_view item_transfer_save sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view",
     "user": {
         "referrer": null,
         "name": "Samsu",

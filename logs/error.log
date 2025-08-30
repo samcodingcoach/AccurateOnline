@@ -750,3 +750,87 @@
 2025-08-30 08:48:57 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/token in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 152
 2025-08-30 08:50:59 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/token in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 152
 2025-08-30 08:52:19 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/check_token?token=b2ccac16-852d-4bcc-8e29-0dbc4da99655 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 152
+2025-08-30 08:57:52 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/token - Raw Response: 
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="in-id" lang="in-id" dir="ltr">
+    <head>
+      <title>Error: Halaman tidak boleh diakses</title>
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=1024, initial-scale=0, maximum-scale=2.0">
+			<link rel="icon" type="image/png" href="/images/favicon.png"/>
+	
+	    <link rel="stylesheet" type="text/css" href="/library/vuexy/v8_2_0/bootstrap5/app-assets/css/bootstrap.min.css" />
+	    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    </head>
+    <body class="bg-verify">
+    <div id="content">
+        <section class="container p-2 position-absolute rounded-2 shadow start-50 top-50 translate-middle" style="width: 800px; margin: auto;">
+            <div class="row m-0">
+           			<div class="col-md-4">
+           				<img src="/images/img/logo-accurate.svg" alt="accurate" class="d-block" width="156px" height="32px" />
+           				<div class="mt-3">
+           					<img src="/images/page-not-found.png" alt="page not found" class="d-block m-auto" width="280px" height="280px" />
+           				</div>
+           			</div>
+           				<div class="col-md-8">
+           					<div class="page-not-found-title">401</div>
+           					<div class="page-not-found-desc">ERROR OCCURED</div>
+           					<div class="mb-1 text-center">
+           							<h3>Halaman tidak boleh diakses</h3>
+												<div class="mb-1">Halaman <strong>/oauth/token</strong> tidak boleh diakses. Mohon periksa kembali URL yang Anda akses</div>
+												<a href="#" onclick="window.history.back(); return false;"><strong>&laquo; Kembali ke halaman sebelumnya</strong></a>
+           					</div>
+           			</div>
+            </div>
+        </section>
+        </div>
+    </body>
+</html>
+ in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 152
+2025-08-30 08:59:17 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/token - Raw Response: 
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="in-id" lang="in-id" dir="ltr">
+    <head>
+      <title>Error: Halaman tidak boleh diakses</title>
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=1024, initial-scale=0, maximum-scale=2.0">
+			<link rel="icon" type="image/png" href="/images/favicon.png"/>
+	
+	    <link rel="stylesheet" type="text/css" href="/library/vuexy/v8_2_0/bootstrap5/app-assets/css/bootstrap.min.css" />
+	    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    </head>
+    <body class="bg-verify">
+    <div id="content">
+        <section class="container p-2 position-absolute rounded-2 shadow start-50 top-50 translate-middle" style="width: 800px; margin: auto;">
+            <div class="row m-0">
+           			<div class="col-md-4">
+           				<img src="/images/img/logo-accurate.svg" alt="accurate" class="d-block" width="156px" height="32px" />
+           				<div class="mt-3">
+           					<img src="/images/page-not-found.png" alt="page not found" class="d-block m-auto" width="280px" height="280px" />
+           				</div>
+           			</div>
+           				<div class="col-md-8">
+           					<div class="page-not-found-title">401</div>
+           					<div class="page-not-found-desc">ERROR OCCURED</div>
+           					<div class="mb-1 text-center">
+           							<h3>Halaman tidak boleh diakses</h3>
+												<div class="mb-1">Halaman <strong>/oauth/token</strong> tidak boleh diakses. Mohon periksa kembali URL yang Anda akses</div>
+												<a href="#" onclick="window.history.back(); return false;"><strong>&laquo; Kembali ke halaman sebelumnya</strong></a>
+           					</div>
+           			</div>
+            </div>
+        </section>
+        </div>
+    </body>
+</html>
+ in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 152
+2025-08-30 09:12:33 - ERROR: API Error: invalid_token (HTTP 401) - URL: https://account.accurate.id/api/db-list.do in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-08-30 09:12:33 - ERROR: API Error: invalid_token (HTTP 401) - URL: https://account.accurate.id/api/db-list.do in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-08-30 09:12:33 - ERROR: API Error: invalid_token (HTTP 401) - URL: https://account.accurate.id/api/db-list.do in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-08-30 09:12:56 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/check_token?token=ada0324c-c80a-4dcf-ab13-74e616809c5c in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-08-30 09:15:40 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/check_token?token=4f8ca24e-8ced-44bb-959d-5660e2d4343a in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-08-30 09:16:05 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/check_token?token=38dcf19d-d0fd-4a30-a11c-821b65775fde in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155

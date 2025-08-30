@@ -79,12 +79,15 @@ class AccurateAPI {
         ]);
         
         $defaultHeaders = [
-            "Authorization: Bearer {$this->accessToken}",
             "Accept: application/json"
         ];
-        
-        if ($this->sessionId) {
-            $defaultHeaders[] = "X-Session-ID: {$this->sessionId}";
+
+        // Only add Auth and Session headers for non-OAuth requests
+        if (strpos($url, '/oauth/token') === false) {
+            $defaultHeaders[] = "Authorization: Bearer {$this->accessToken}";
+            if ($this->sessionId) {
+                $defaultHeaders[] = "X-Session-ID: {$this->sessionId}";
+            }
         }
         
         $allHeaders = array_merge($defaultHeaders, $headers);
@@ -204,17 +207,44 @@ class AccurateAPI {
         
         $data = [
             'grant_type' => 'authorization_code',
-            'client_id' => OAUTH_CLIENT_ID,
-            'client_secret' => OAUTH_CLIENT_SECRET,
-            'redirect_uri' => OAUTH_REDIRECT_URI,
-            'code' => $authCode
+            'code' => $authCode,
+            'redirect_uri' => OAUTH_REDIRECT_URI
         ];
         
         $headers = [
-            'Content-Type: application/x-www-form-urlencoded'
+            'Content-Type: application/x-www-form-urlencoded',
+            'Authorization: Basic ' . base64_encode(OAUTH_CLIENT_ID . ':' . OAUTH_CLIENT_SECRET)
         ];
         
-        return $this->makeRequest($url, 'POST', http_build_query($data), $headers);
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($data),
+            CURLOPT_HTTPHEADER => $headers
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            logError("cURL Error in getAccessToken: $error", __FILE__, __LINE__);
+            return ['success' => false, 'http_code' => 0, 'data' => null, 'error' => $error];
+        }
+
+        $decodedResponse = json_decode($response, true);
+        $success = $httpCode >= 200 && $httpCode < 300;
+
+        return [
+            'success' => $success,
+            'http_code' => $httpCode,
+            'data' => $decodedResponse,
+            'error' => $success ? null : ($decodedResponse['error_description'] ?? $decodedResponse['error'] ?? 'Unknown error'),
+            'raw_response' => $response
+        ];
     }
 
     /**
@@ -227,16 +257,43 @@ class AccurateAPI {
         
         $data = [
             'grant_type' => 'refresh_token',
-            'client_id' => OAUTH_CLIENT_ID,
-            'client_secret' => OAUTH_CLIENT_SECRET,
             'refresh_token' => $refreshToken
         ];
         
         $headers = [
-            'Content-Type: application/x-www-form-urlencoded'
+            'Content-Type: application/x-www-form-urlencoded',
+            'Authorization: Basic ' . base64_encode(OAUTH_CLIENT_ID . ':' . OAUTH_CLIENT_SECRET)
         ];
         
-        return $this->makeRequest($url, 'POST', http_build_query($data), $headers);
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($data),
+            CURLOPT_HTTPHEADER => $headers
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            logError("cURL Error in refreshToken: $error", __FILE__, __LINE__);
+            return ['success' => false, 'http_code' => 0, 'data' => null, 'error' => $error];
+        }
+
+        $decodedResponse = json_decode($response, true);
+        $success = $httpCode >= 200 && $httpCode < 300;
+
+        return [
+            'success' => $success,
+            'http_code' => $httpCode,
+            'data' => $decodedResponse,
+            'error' => $success ? null : ($decodedResponse['error_description'] ?? $decodedResponse['error'] ?? 'Unknown error'),
+            'raw_response' => $response
+        ];
     }
 
     /**
