@@ -15,8 +15,8 @@ define('ACCURATE_AUTH_HOST', 'https://account.accurate.id');
 define('ACCURATE_ACCESS_TOKEN', '0e95218c-b98f-45fd-894d-e2038d705a9e');
 define('ACCURATE_TOKEN_SCOPE', 'unit_save branch_view unit_delete tax_view fixed_asset_view item_transfer_view access_privilege_view sales_order_save employee_view purchase_invoice_view item_category_view sales_invoice_view warehouse_view sellingprice_adjustment_view unit_view stock_mutation_history_view customer_view vendor_category_view sales_order_view sales_receipt_view shipment_view payment_term_view purchase_order_view item_transfer_save sellingprice_adjustment_save item_view vendor_view sales_invoice_save item_save price_category_view');
 define('ACCURATE_REFRESH_TOKEN', 'f311a524-0000-4613-83d7-1c174f17e370');
-define('ACCURATE_SESSION_ID', '6d5cd7c5-092b-497c-b29a-d9105b1f7173');
-define('ACCURATE_DATABASE_ID', '1963082');
+define('ACCURATE_SESSION_ID', '9ec49c80-f542-409b-9160-045b37e270ad');
+define('ACCURATE_DATABASE_ID', '2028904');
 
 // Konfigurasi aplikasi
 define('APP_NAME', 'Nuansa Accurate API');

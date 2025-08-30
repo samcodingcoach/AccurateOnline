@@ -563,8 +563,7 @@ if ($urlMismatch && isset($_GET['update_config']) && $_GET['update_config'] === 
                             if (!is_string($scope)) continue;
                             
                             $label = isset($scopeLabels[$scope]) ? $scopeLabels[$scope] : ucwords(str_replace('_', ' ', $scope));
-                            // Semua scope yang sudah terdaftar dianggap sebagai required
-                            $isRequired = true;
+                            $isRequired = in_array($scope, $defaultScopes);
                     ?>
                         <div class="relative p-4 rounded-lg bg-blue-500 text-white">
                             <div class="absolute top-2 right-2">
