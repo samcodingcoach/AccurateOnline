@@ -25,6 +25,22 @@ if ($categories_json) {
         });
     }
 }
+
+// Fetch units
+$units = [];
+$units_url = $protocol . $host . '/nuansa/unit/list_unit.php';
+$units_json = @file_get_contents($units_url);
+if ($units_json) {
+    $units_data = json_decode($units_json, true);
+    // Adjusted to match the actual structure from list_unit.php
+    if (isset($units_data['data']['units']['d'])) {
+        $units = $units_data['data']['units']['d'];
+        // Sort units by name alphabetically
+        usort($units, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -171,8 +187,15 @@ if ($categories_json) {
                     
                     <div>
                         <label for="satuan" class="block text-sm font-medium text-gray-700 mb-2">Satuan</label>
-                        <input type="text" id="satuan" name="unit1Name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <select id="satuan" name="unit1Name" required
+                                class="w-full">
+                            <option value=""></option>
+                            <?php foreach ($units as $unit): ?>
+                                <option value="<?php echo htmlspecialchars($unit['name']); ?>">
+                                    <?php echo htmlspecialchars($unit['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     
                     <div class="flex items-center justify-between">
@@ -258,6 +281,12 @@ if ($categories_json) {
                 width: '100%'
             });
 
+            $('#satuan').select2({
+                placeholder: "Pilih atau cari satuan",
+                allowClear: true,
+                width: '100%'
+            });
+
             // Setup number formatting untuk price inputs
             const priceInputs = ['price1', 'price2', 'price3'];
             
@@ -319,7 +348,7 @@ if ($categories_json) {
                     no: document.getElementById('kodeBarang').value,
                     itemCategoryName: $('#kategori').val(), // Get value from Select2
                     name: document.getElementById('namaBarang').value,
-                    unit1Name: document.getElementById('satuan').value,
+                    unit1Name: $('#satuan').val(), // Get value from Select2
                     manageSN: document.getElementById('aktifSN').checked ? 'True' : 'False'
                 };
                 
