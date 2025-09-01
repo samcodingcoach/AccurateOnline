@@ -511,7 +511,38 @@ try {
                     </div>
                 </div>
 
-                <!-- 8. Items Management -->
+                <!-- 8. Unit Management -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-balance-scale text-green-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        Unit Management
+                                    </dt>
+                                    <dd class="text-lg font-medium text-gray-900">
+                                        Kelola Satuan
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="mt-5">
+                            <div class="flex space-x-2">
+                                <a href="unit/index.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                    <i class="fas fa-balance-scale mr-1"></i> List Unit
+                                </a>
+                                <button id="openUnitApiModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    <i class="fas fa-code mr-1"></i> API JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Items Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -1205,6 +1236,7 @@ try {
         const CATEGORY_API_URL = BASE_URL + '/nuansa/itemcategory/listcategory.php';
         const FIXEDASSET_API_URL = BASE_URL + '/nuansa/fixedasset/listasset.php';
         const WAREHOUSE_API_URL = BASE_URL + '/nuansa/warehouse/listwarehouse.php';
+        const UNIT_API_URL = BASE_URL + '/nuansa/unit/list_unit.php';
         const PRICECATEGORY_API_URL = BASE_URL + '/nuansa/price/listprice_category.php';
         const SALESORDER_API_URL = BASE_URL + '/nuansa/salesorder/list_so.php';
         const SALESINVOICE_API_URL = BASE_URL + '/nuansa/salesinvoice/list_invoice.php';
@@ -1226,6 +1258,7 @@ try {
             { name: 'Categories API', url: CATEGORY_API_URL, type: 'json' },
             { name: 'Fixed Assets API', url: FIXEDASSET_API_URL, type: 'json' },
             { name: 'Warehouses API', url: WAREHOUSE_API_URL, type: 'json' },
+            { name: 'Units API', url: UNIT_API_URL, type: 'json' },
             { name: 'Price Categories API', url: PRICECATEGORY_API_URL, type: 'json' },
             { name: 'Sales Orders API', url: SALESORDER_API_URL, type: 'json' },
             { name: 'Sales Invoices API', url: SALESINVOICE_API_URL, type: 'json' },
@@ -1253,6 +1286,7 @@ try {
             const openCategoryApiModal = document.getElementById('openCategoryApiModal');
             const openFixedAssetApiModal = document.getElementById('openFixedAssetApiModal');
             const openWarehouseApiModal = document.getElementById('openWarehouseApiModal');
+            const openUnitApiModal = document.getElementById('openUnitApiModal');
             const openPriceCategoryApiModal = document.getElementById('openPriceCategoryApiModal');
             const openSalesOrderApiModal = document.getElementById('openSalesOrderApiModal');
             const openSalesInvoiceApiModal = document.getElementById('openSalesInvoiceApiModal');
@@ -1358,6 +1392,15 @@ try {
             if (openWarehouseApiModal) {
                 openWarehouseApiModal.addEventListener('click', () => {
                     currentApiUrl = WAREHOUSE_API_URL;
+                    apiUrl.textContent = currentApiUrl;
+                    jsonModal.classList.remove('hidden');
+                    loadJsonData();
+                });
+            }
+            
+            if (openUnitApiModal) {
+                openUnitApiModal.addEventListener('click', () => {
+                    currentApiUrl = UNIT_API_URL;
                     apiUrl.textContent = currentApiUrl;
                     jsonModal.classList.remove('hidden');
                     loadJsonData();
