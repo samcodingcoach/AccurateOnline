@@ -843,6 +843,32 @@ public function getUnitList($limit = 25, $page = 1) {
 }
 
     /**
+     * Get unit detail berdasarkan ID
+     * @param int $unitId ID unit
+     * @return array Response dari API
+     */
+    public function getUnitDetail($unitId) {
+        // Validasi ID unit
+        if (empty($unitId)) {
+            return [
+                'success' => false,
+                'message' => 'Unit ID is required',
+                'data' => null
+            ];
+        }
+        
+        $url = $this->host . '/accurate/api/unit/detail.do';
+        
+        $params = [
+            'id' => $unitId
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
+    /**
      * Get list of customers dengan pagination
      * @param mixed $params Parameter tambahan untuk query (array) atau limit (int)
      * @param int $page Page number jika parameter pertama adalah limit
