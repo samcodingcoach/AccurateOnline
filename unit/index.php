@@ -1,15 +1,28 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
 
+// Pastikan session sudah dimulai untuk mengambil flash message
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Ambil flash message jika ada, lalu hapus dari session
+$flash_message = $_SESSION['flash_message'] ?? null;
+$flash_message_type = $_SESSION['flash_message_type'] ?? 'success';
+if ($flash_message) {
+    unset($_SESSION['flash_message']);
+    unset($_SESSION['flash_message_type']);
+}
+
 $api = new AccurateAPI();
-// Memanggil fungsi untuk mendapatkan daftar unit, diasumsikan getUnitList() ada di AccurateAPI
+// Memanggil fungsi untuk mendapatkan daftar satuan, diasumsikan getUnitList() ada di AccurateAPI
 $result = $api->getUnitList(); 
 $units = [];
 
 if ($result['success'] && isset($result['data']['d'])) {
     $units = $result['data']['d'];
     
-    // Urutkan unit berdasarkan ID
+    // Urutkan satuan berdasarkan ID
     usort($units, function($a, $b) {
         return ($a['id'] ?? 0) <=> ($b['id'] ?? 0);
     });
@@ -21,7 +34,7 @@ if ($result['success'] && isset($result['data']['d'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Unit - Nuansa</title>
+    <title>Daftar Satuan - Nuansa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -32,11 +45,11 @@ if ($result['success'] && isset($result['data']['d'])) {
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <i class="fas fa-box text-blue-600 mr-3 text-2xl"></i>
-                    <h1 class="text-3xl font-bold text-gray-900">Daftar Unit</h1>
+                    <h1 class="text-3xl font-bold text-gray-900">Daftar Satuan</h1>
                 </div>
                 <div class="flex gap-4">
                     <a href="new_unit.php" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-                        <i class="fas fa-plus mr-2"></i>Tambah Unit
+                        <i class="fas fa-plus mr-2"></i>Tambah Satuan
                     </a>
                     <a href="../index.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
                         <i class="fas fa-home mr-2"></i>Dashboard
@@ -48,15 +61,23 @@ if ($result['success'] && isset($result['data']['d'])) {
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <?php if ($flash_message): ?>
+            <div class="mb-6 p-4 rounded-lg <?php echo $flash_message_type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                <i class="fas <?php echo $flash_message_type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?> mr-2"></i>
+                <?php echo $flash_message; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Data Unit</h2>
+            <h2 class="text-xl font-semibold mb-4">Data Satuan</h2>
             
             <?php if (!empty($units)):
             ?>
                 <div class="mb-4">
                     <p class="text-sm text-gray-600">
                         <i class="fas fa-info-circle mr-1"></i>
-                        Menampilkan <?php echo count($units); ?> unit.
+                        Menampilkan <?php echo count($units); ?> satuan.
                     </p>
                 </div>
                 
@@ -86,8 +107,8 @@ if ($result['success'] && isset($result['data']['d'])) {
             ?>
                 <div class="text-center py-8">
                     <i class="fas fa-box-open text-4xl text-gray-400"></i>
-                    <p class="mt-4 text-gray-600">Tidak ada data unit yang ditemukan.</p>
-                    <p class="text-sm text-gray-500">Coba tambahkan unit baru atau periksa koneksi API.</p>
+                    <p class="mt-4 text-gray-600">Tidak ada data satuan yang ditemukan.</p>
+                    <p class="text-sm text-gray-500">Coba tambahkan satuan baru atau periksa koneksi API.</p>
                 </div>
             <?php endif; ?>
         </div>

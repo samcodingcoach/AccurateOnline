@@ -869,6 +869,36 @@ public function getUnitList($limit = 25, $page = 1) {
     }
 
     /**
+     * Save unit to Accurate
+     * @param array $unitData Unit data to save, requires 'name'
+     * @return array Response from API
+     */
+    public function saveUnit($unitData) {
+        // Validasi data required
+        if (!isset($unitData['name']) || empty($unitData['name'])) {
+            return [
+                'success' => false,
+                'error' => "Field 'name' is required",
+                'data' => null,
+                'http_code' => 400
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/unit/save.do';
+        
+        // Prepare data for API
+        $postData = [
+            'name' => $unitData['name']
+        ];
+
+        $headers = [
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
+
+        return $this->makeRequest($url, 'POST', http_build_query($postData), $headers);
+    }
+
+    /**
      * Get list of customers dengan pagination
      * @param mixed $params Parameter tambahan untuk query (array) atau limit (int)
      * @param int $page Page number jika parameter pertama adalah limit
