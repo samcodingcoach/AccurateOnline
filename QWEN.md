@@ -302,3 +302,8 @@ Penjelasan kode:
 
    Perintah 4:
    pada sellingprice/detail.php bagian Detail Item, buatkan search agar bisa mencari berdasarkan no / kode atau berdasarkan nama barang dan data pada detail item buatkan paging dengan pembagian 20 item per page
+
+   Perintah 5:
+
+Perintah 6:
+tambahkan menu setelah Price Category Management Kelola Kategori Harga ada tombol untuk menuju sellingprice/index.php dan API JSON dapat membuka modal yang memunculkan list_spa.php

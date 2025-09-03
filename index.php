@@ -697,7 +697,38 @@ try {
                     </div>
                 </div>
 
-                <!-- 13. Sales Order Management -->
+                <!-- 13. Selling Price Management -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-tag text-blue-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        Selling Price Management
+                                    </dt>
+                                    <dd class="text-lg font-medium text-gray-900">
+                                        Kelola Harga Jual
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="mt-5">
+                            <div class="flex space-x-2">
+                                <a href="sellingprice/index.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <i class="fas fa-tags mr-1"></i> List Selling Price
+                                </a>
+                                <button id="openSellingPriceApiModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    <i class="fas fa-code mr-1"></i> API JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 14. Sales Order Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -1238,6 +1269,7 @@ try {
         const WAREHOUSE_API_URL = BASE_URL + '/nuansa/warehouse/listwarehouse.php';
         const UNIT_API_URL = BASE_URL + '/nuansa/unit/list_unit.php';
         const PRICECATEGORY_API_URL = BASE_URL + '/nuansa/price/listprice_category.php';
+        const SELLINGPRICE_API_URL = BASE_URL + '/nuansa/sellingprice/list_spa.php';
         const SALESORDER_API_URL = BASE_URL + '/nuansa/salesorder/list_so.php';
         const SALESINVOICE_API_URL = BASE_URL + '/nuansa/salesinvoice/list_invoice.php';
         const SALESRECEIPT_API_URL = BASE_URL + '/nuansa/salesreceipt/list_receipt.php';
@@ -1260,6 +1292,7 @@ try {
             { name: 'Warehouses API', url: WAREHOUSE_API_URL, type: 'json' },
             { name: 'Units API', url: UNIT_API_URL, type: 'json' },
             { name: 'Price Categories API', url: PRICECATEGORY_API_URL, type: 'json' },
+            { name: 'Selling Price API', url: SELLINGPRICE_API_URL, type: 'json' },
             { name: 'Sales Orders API', url: SALESORDER_API_URL, type: 'json' },
             { name: 'Sales Invoices API', url: SALESINVOICE_API_URL, type: 'json' },
             { name: 'Sales Receipts API', url: SALESRECEIPT_API_URL, type: 'json' },
@@ -1288,6 +1321,7 @@ try {
             const openWarehouseApiModal = document.getElementById('openWarehouseApiModal');
             const openUnitApiModal = document.getElementById('openUnitApiModal');
             const openPriceCategoryApiModal = document.getElementById('openPriceCategoryApiModal');
+            const openSellingPriceApiModal = document.getElementById('openSellingPriceApiModal');
             const openSalesOrderApiModal = document.getElementById('openSalesOrderApiModal');
             const openSalesInvoiceApiModal = document.getElementById('openSalesInvoiceApiModal');
             const openSalesReceiptApiModal = document.getElementById('openSalesReceiptApiModal');
@@ -1410,6 +1444,15 @@ try {
             if (openPriceCategoryApiModal) {
                 openPriceCategoryApiModal.addEventListener('click', () => {
                     currentApiUrl = PRICECATEGORY_API_URL;
+                    apiUrl.textContent = currentApiUrl;
+                    jsonModal.classList.remove('hidden');
+                    loadJsonData();
+                });
+            }
+            
+            if (openSellingPriceApiModal) {
+                openSellingPriceApiModal.addEventListener('click', () => {
+                    currentApiUrl = BASE_URL + '/nuansa/sellingprice/list_spa.php';
                     apiUrl.textContent = currentApiUrl;
                     jsonModal.classList.remove('hidden');
                     loadJsonData();
