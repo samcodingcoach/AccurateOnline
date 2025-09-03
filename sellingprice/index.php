@@ -22,9 +22,9 @@ $sellingPrices = [];
 if ($result['success'] && isset($result['data']['d'])) {
     $sellingPrices = $result['data']['d'];
     
-    // Urutkan berdasarkan ID
+    // Urutkan berdasarkan number secara DESC
     usort($sellingPrices, function($a, $b) {
-        return ($a['id'] ?? 0) <=> ($b['id'] ?? 0);
+        return strcmp($b['number'] ?? '', $a['number'] ?? '');
     });
 }
 

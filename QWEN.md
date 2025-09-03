@@ -27,7 +27,9 @@ Kesimpulan Perintah 2:
 Telah dibuat halaman sellingprice/detail.php yang menampilkan data dari endpoint /sellingprice/detail_spa.php dengan parameter number. Halaman ini menampilkan informasi detail selling price adjustment sesuai dengan pola yang digunakan di warehouse/detail.php.
 
 Data yang ditampilkan:
+
 1. Bagian header:
+
    - Nomor Dokumen (d.number)
    - Kategori Harga (d.priceCategory.name)
    - Cabang (d.spaBranchName)
@@ -42,6 +44,7 @@ Data yang ditampilkan:
    - Harga (d.detailItem[n].price)
 
 Kode yang digunakan:
+
 ```php
 <?php
 require_once __DIR__ . '/../bootstrap.php';
@@ -104,7 +107,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                         <h2 class="text-xl font-semibold text-gray-900">Selling Price Adjustment Details</h2>
                     </div>
                 </div>
-                
+
                 <!-- Content -->
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -117,7 +120,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                     <span class="text-gray-900"><?php echo htmlspecialchars($spa['number'] ?? 'N/A'); ?></span>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Kategori Harga</label>
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -125,7 +128,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                     <span class="text-gray-900"><?php echo htmlspecialchars($spa['priceCategory']['name'] ?? 'N/A'); ?></span>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Cabang</label>
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -134,7 +137,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Kolom Kanan -->
                         <div class="space-y-6">
                             <div>
@@ -144,7 +147,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                     <span class="text-gray-900"><?php echo htmlspecialchars($spa['salesAdjustmentType'] ?? 'N/A'); ?></span>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Transaksi</label>
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -152,7 +155,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                     <span class="text-gray-900"><?php echo htmlspecialchars($spa['transDate'] ?? 'N/A'); ?></span>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">ID</label>
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -162,11 +165,11 @@ if ($result['success'] && isset($result['data']['d'])) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Section Detail Items -->
                     <div class="mt-8 pt-6 border-t border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Item</h3>
-                        
+
                         <?php if (isset($spa['detailItem']) && is_array($spa['detailItem']) && !empty($spa['detailItem'])): ?>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
@@ -210,7 +213,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                         <?php endif; ?>
                     </div>
                 </div>
-                
+
                 <!-- Debug Info -->
                 <div class="mx-6 mb-6 bg-gray-50 rounded-lg p-4">
                     <h3 class="text-lg font-medium mb-2">Debug Info</h3>
@@ -223,10 +226,10 @@ if ($result['success'] && isset($result['data']['d'])) {
                             <p><strong>Error:</strong> <?php echo htmlspecialchars($result['error']); ?></p>
                         <?php endif; ?>
                     </div>
-                    
+
                     <details class="mt-4">
                         <summary class="cursor-pointer text-blue-600">Raw Response</summary>
-                        <pre class="mt-2 bg-white p-3 rounded border text-xs overflow-auto"><?php 
+                        <pre class="mt-2 bg-white p-3 rounded border text-xs overflow-auto"><?php
                             // Tampilkan raw response yang sebenarnya dari API
                             if ($rawResponse) {
                                 echo htmlspecialchars(json_encode($rawResponse, JSON_PRETTY_PRINT));
@@ -258,7 +261,9 @@ if ($result['success'] && isset($result['data']['d'])) {
 ```
 
 Penjelasan kode:
+
 1. Bagian PHP di awal berfungsi untuk:
+
    - Mengimpor file bootstrap.php untuk inisialisasi sistem
    - Membuat instance dari class AccurateAPI
    - Mengambil parameter number dari URL
@@ -266,26 +271,34 @@ Penjelasan kode:
    - Menangani kasus ketika parameter number tidak diberikan dengan mengarahkan ke index.php
 
 2. Bagian HTML menggunakan Tailwind CSS untuk tampilan:
+
    - Header dengan judul dan tombol kembali ke index.php serta dashboard
    - Area untuk menampilkan informasi header selling price adjustment:
-     * Nomor Dokumen
-     * Kategori Harga
-     * Cabang
-     * Tipe Penyesuaian
-     * Tanggal Transaksi
-     * ID
+     - Nomor Dokumen
+     - Kategori Harga
+     - Cabang
+     - Tipe Penyesuaian
+     - Tanggal Transaksi
+     - ID
    - Tabel untuk menampilkan detail item dengan kolom:
-     * No (increment dari 1)
-     * Kode
-     * Nama Barang
-     * Satuan
-     * Harga
+     - No (increment dari 1)
+     - Kode
+     - Nama Barang
+     - Satuan
+     - Harga
    - Penanganan kasus ketika tidak ada data untuk ditampilkan
    - Debug info untuk membantu dalam pengembangan dan troubleshooting
 
 3. Fitur tambahan:
+
    - Proteksi XSS dengan htmlspecialchars pada semua data yang ditampilkan
    - Format harga dengan number_format untuk tampilan yang lebih baik
    - Tampilan responsif yang bekerja di berbagai ukuran layar
    - Ikon dari Font Awesome untuk mempercantik tampilan
    - Penanganan error jika data tidak ditemukan
+
+   Perintah 3:
+   pada sellingprice/index.php, urutkan number by DESC
+
+   Perintah 4:
+   pada sellingprice/detail.php bagian Detail Item, buatkan search agar bisa mencari berdasarkan no / kode atau berdasarkan nama barang dan data pada detail item buatkan paging dengan pembagian 20 item per page

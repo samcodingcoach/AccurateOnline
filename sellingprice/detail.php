@@ -123,40 +123,122 @@ if ($result['success'] && isset($result['data']['d'])) {
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Item</h3>
                         
                         <?php if (isset($spa['detailItem']) && is_array($spa['detailItem']) && !empty($spa['detailItem'])): ?>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        <?php foreach ($spa['detailItem'] as $index => $detail): ?>
-                                            <tr class="hover:bg-gray-50">
-                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo $index + 1; ?>
-                                                </td>
-                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo htmlspecialchars($detail['item']['no'] ?? 'N/A'); ?>
-                                                </td>
-                                                <td class="px-4 py-4 text-sm text-gray-900">
-                                                    <?php echo htmlspecialchars($detail['item']['name'] ?? 'N/A'); ?>
-                                                </td>
-                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo htmlspecialchars($detail['item']['unit1']['name'] ?? 'N/A'); ?>
-                                                </td>
-                                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo number_format($detail['price'] ?? 0, 2, ',', '.'); ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                            <?php
+                            // Pagination dan search untuk detail items
+                            $allItems = $spa['detailItem'];
+                            $itemsPerPage = 20;
+                            $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $search = isset($_GET['search']) ? $_GET['search'] : '';
+                            
+                            // Filter berdasarkan search
+                            if (!empty($search)) {
+                                $allItems = array_filter($allItems, function($item) use ($search) {
+                                    $kode = $item['item']['no'] ?? '';
+                                    $nama = $item['item']['name'] ?? '';
+                                    return stripos($kode, $search) !== false || stripos($nama, $search) !== false;
+                                });
+                            }
+                            
+                            // Pagination
+                            $totalItems = count($allItems);
+                            $totalPages = ceil($totalItems / $itemsPerPage);
+                            $currentPage = max(1, min($currentPage, $totalPages));
+                            $startIndex = ($currentPage - 1) * $itemsPerPage;
+                            $pagedItems = array_slice($allItems, $startIndex, $itemsPerPage);
+                            ?>
+                            
+                            <!-- Search Form -->
+                            <div class="mb-4">
+                                <form method="GET" class="flex gap-2">
+                                    <input type="hidden" name="number" value="<?php echo htmlspecialchars($number); ?>">
+                                    <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
+                                           placeholder="Cari berdasarkan kode atau nama barang..." 
+                                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                                        <i class="fas fa-search"></i> Cari
+                                    </button>
+                                    <?php if (!empty($search)): ?>
+                                        <a href="?number=<?php echo htmlspecialchars($number); ?>" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                                            <i class="fas fa-times"></i> Clear
+                                        </a>
+                                    <?php endif; ?>
+                                </form>
                             </div>
+                            
+                            <?php if (!empty($pagedItems)): ?>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <?php foreach ($pagedItems as $index => $detail): ?>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <?php echo $startIndex + $index + 1; ?>
+                                                    </td>
+                                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <?php echo htmlspecialchars($detail['item']['no'] ?? 'N/A'); ?>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-sm text-gray-900">
+                                                        <?php echo htmlspecialchars($detail['item']['name'] ?? 'N/A'); ?>
+                                                    </td>
+                                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <?php echo htmlspecialchars($detail['item']['unit1']['name'] ?? 'N/A'); ?>
+                                                    </td>
+                                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <?php echo number_format($detail['price'] ?? 0, 2, ',', '.'); ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Pagination -->
+                                <?php if ($totalPages > 1): ?>
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <div class="text-sm text-gray-700">
+                                            Menampilkan <?php echo $startIndex + 1; ?> - <?php echo min($startIndex + $itemsPerPage, $totalItems); ?> dari <?php echo $totalItems; ?> item
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <?php if ($currentPage > 1): ?>
+                                                <a href="?number=<?php echo htmlspecialchars($number); ?>&search=<?php echo htmlspecialchars($search); ?>&page=<?php echo $currentPage - 1; ?>" 
+                                                   class="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            
+                                            <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
+                                                <?php if ($i == $currentPage): ?>
+                                                    <span class="px-3 py-1 rounded bg-blue-600 text-white"><?php echo $i; ?></span>
+                                                <?php else: ?>
+                                                    <a href="?number=<?php echo htmlspecialchars($number); ?>&search=<?php echo htmlspecialchars($search); ?>&page=<?php echo $i; ?>" 
+                                                       class="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"><?php echo $i; ?></a>
+                                                <?php endif; ?>
+                                            <?php endfor; ?>
+                                            
+                                            <?php if ($currentPage < $totalPages): ?>
+                                                <a href="?number=<?php echo htmlspecialchars($number); ?>&search=<?php echo htmlspecialchars($search); ?>&page=<?php echo $currentPage + 1; ?>" 
+                                                   class="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="text-center py-8">
+                                    <i class="fas fa-box-open text-4xl text-gray-400"></i>
+                                    <p class="mt-4 text-gray-600">Tidak ada detail item yang sesuai dengan pencarian.</p>
+                                </div>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="text-center py-8">
                                 <i class="fas fa-box-open text-4xl text-gray-400"></i>
