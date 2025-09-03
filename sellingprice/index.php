@@ -105,7 +105,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                                         <?php echo htmlspecialchars($price['salesAdjustmentType'] ?? 'N/A'); ?>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <a href="detail_spa.php?id=<?php echo htmlspecialchars($price['id'] ?? ''); ?>" class="text-blue-600 hover:text-blue-900">
+                                        <a href="detail.php?number=<?php echo htmlspecialchars($price['number'] ?? ''); ?>" class="text-blue-600 hover:text-blue-900">
                                             Detail
                                         </a>
                                     </td>
