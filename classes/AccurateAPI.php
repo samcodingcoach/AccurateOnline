@@ -835,12 +835,12 @@ class AccurateAPI {
  * @param int $page Nomor halaman
  * @return array Response dari API
  */
-public function getUnitList($limit = 25, $page = 1) {
+    public function getUnitList($limit = 25, $page = 1) {
     $url = $this->host . '/accurate/api/unit/list.do';
     $params = ['sp.pageSize' => $limit, 'sp.page' => $page];
     $url .= '?' . http_build_query($params);
     return $this->makeRequest($url);
-}
+    }
 
     /**
      * Get unit detail berdasarkan ID
@@ -1842,5 +1842,86 @@ public function getUnitList($limit = 25, $page = 1) {
         
         return $this->makeRequest($url, 'GET');
     }
+
+    /**
+     * Get selling price adjustment list
+     * @param array $params Parameters for filtering and pagination
+     * @return array Response from API
+     */
+    public function getSellingPriceAdjustmentList($params = []) {
+        // Default parameters
+        $defaultParams = [
+            'sp.page' => 1,
+            'sp.pageSize' => 25,
+            'fields' => 'id,number,spaBranchName,salesAdjustmentType,transDate'
+        ];
+        
+        // Merge with provided parameters
+        $params = array_merge($defaultParams, $params);
+        
+        $url = $this->host . '/accurate/api/sellingprice-adjustment/list.do';
+        
+        // Add parameters to URL if provided
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+        
+        return $this->makeRequest($url, 'GET');
+    }
+    
+    /**
+     * Get selling price adjustment detail by ID
+     * @param int $id Selling price adjustment ID
+     * @return array Response from API
+     */
+    public function getSellingPriceAdjustmentDetail($id) {
+        // Validasi ID required
+        if (empty($id)) {
+            return [
+                'success' => false,
+                'error' => 'Selling price adjustment ID is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/sellingprice-adjustment/detail.do';
+        
+        // Prepare parameters
+        $params = [
+            'id' => $id
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+    
+    /**
+     * Get selling price adjustment detail by number
+     * @param string $number Selling price adjustment number
+     * @return array Response from API
+     */
+    public function getSellingPriceAdjustmentDetailByNumber($number) {
+        // Validasi number required
+        if (empty($number)) {
+            return [
+                'success' => false,
+                'error' => 'Selling price adjustment number is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/sellingprice-adjustment/detail.do';
+        
+        // Prepare parameters
+        $params = [
+            'number' => $number
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
 }
 ?>
