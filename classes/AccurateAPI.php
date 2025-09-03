@@ -1619,19 +1619,20 @@ public function getUnitList($limit = 25, $page = 1) {
         
         // Add priceCategoryName berdasarkan ID yang diberikan
         if (isset($sellingPriceData['id']) && !empty($sellingPriceData['id'])) {
-            // Mapping ID ke nama kategori harga
+            // Mapping ID ke nama kategori harga dan ID yang sesuai
             $priceCategoryMapping = [
-                '50' => 'Level1',
-                '200' => 'Level2', 
-                '250' => 'Level3',
-                '151' => 'Level4',
-                '300' => 'Level5',
-                '350' => 'Level6',
-                '301' => 'Level7'
+                '50' => ['level' => 'Level1', 'id' => 50],
+                '200' => ['level' => 'Level2', 'id' => 100], 
+                '250' => ['level' => 'Level3', 'id' => 150],
+                '151' => ['level' => 'Level4', 'id' => 200],
+                '300' => ['level' => 'Level5', 'id' => 101],
+                '350' => ['level' => 'Level6', 'id' => 51],
+                '301' => ['level' => 'Level7', 'id' => 151]
             ];
             
             if (isset($priceCategoryMapping[$sellingPriceData['id']])) {
-                $postData['priceCategoryName'] = $priceCategoryMapping[$sellingPriceData['id']];
+                $postData['priceCategoryName'] = $priceCategoryMapping[$sellingPriceData['id']]['level'];
+                $postData['id'] = $priceCategoryMapping[$sellingPriceData['id']]['id'];
             } else {
                 return [
                     'success' => false,
