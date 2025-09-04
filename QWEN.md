@@ -364,3 +364,7 @@ padahal datanya cuma 1 menurut table
 
 Perintah 14:
 -pada list card untuk name sebaiknya pakai teknik string Food Chopper Motto CN 2505 menjadi Food Chopper Motto... jika terlalu panjang apalagi pada saat mobile preview
+
+perintah 15
+-perbaiki responsive filter tanggal
+-perbaiki responsive pada bagian Daftar Barang dan dua tombol Add new item, dashboard
