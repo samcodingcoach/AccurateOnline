@@ -380,9 +380,15 @@ if (!empty($searchName)) {
                             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Cabang:</label>
                             <div class="relative">
                                 <select id="branchSelect" onchange="switchBranch()" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none">
                                     <!-- Options akan diisi via JavaScript -->
                                 </select>
+                                <!-- Chevron icon -->
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         
@@ -524,8 +530,8 @@ if (!empty($searchName)) {
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price Category</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Effective Date</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -535,8 +541,8 @@ if (!empty($searchName)) {
                 contentHtml += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 text-sm text-gray-900">${price.categoryName}</td>
-                        <td class="px-4 py-3 text-sm text-gray-900 text-right font-medium">${formatCurrency(price.price)}</td>
                         <td class="px-4 py-3 text-sm text-gray-900">${price.effectiveDate}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900 text-right font-medium">${formatCurrency(price.price)}</td>
                     </tr>
                 `;
             });
@@ -555,18 +561,30 @@ if (!empty($searchName)) {
             const branchSelect = document.getElementById('branchSelect');
             const selectedBranchId = branchSelect.value;
             
-            // Find the index of the selected branch
-            const data = window.priceLevelData;
-            if (!data || !data.groupedPrices) return;
+            // Show loading indicator
+            const branchContent = document.getElementById('branchContent');
+            branchContent.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-blue-600 text-2xl mb-2"></i>
+                    <p class="text-gray-600">Memuat data untuk cabang yang dipilih...</p>
+                </div>
+            `;
             
-            const selectedIndex = data.groupedPrices.findIndex((group, index) => {
-                const branchId = `branch-${group.branchId || index}`;
-                return branchId === selectedBranchId;
-            });
-            
-            if (selectedIndex !== -1) {
-                displayBranchContent(selectedIndex);
-            }
+            // Add a small delay to simulate loading
+            setTimeout(() => {
+                // Find the index of the selected branch
+                const data = window.priceLevelData;
+                if (!data || !data.groupedPrices) return;
+                
+                const selectedIndex = data.groupedPrices.findIndex((group, index) => {
+                    const branchId = `branch-${group.branchId || index}`;
+                    return branchId === selectedBranchId;
+                });
+                
+                if (selectedIndex !== -1) {
+                    displayBranchContent(selectedIndex);
+                }
+            }, 300); // 300ms delay to simulate loading
         }
 
         // Function untuk close modal
