@@ -1580,8 +1580,8 @@ class AccurateAPI {
             'itemType' => $itemData['itemType'] ?? 'INVENTORY',
             'name' => $itemData['name'],
             'unit1Name' => $itemData['unit1Name'],
-            'manageSN' => $itemData['manageSN'],
-            'serialNumberType' => $itemData['serialNumberType'] ?? 'UNIQUE'
+            'manageSN' => 'true',
+            'serialNumberType' => 'UNIQUE'
         ];
 
         $headers = [

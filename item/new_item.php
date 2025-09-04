@@ -731,7 +731,7 @@ if ($units_json) {
                     itemCategoryName: $('#kategori').val(), // Get value from Select2
                     name: document.getElementById('namaBarang').value,
                     unit1Name: $('#satuan').val(), // Get value from Select2
-                    manageSN: document.getElementById('aktifSN').checked ? 'True' : 'False'
+                    manageSN: document.getElementById('aktifSN').checked ? 'true' : 'false'
                 };
                 
                 const itemResponse = await fetch('/nuansa/item/itemsave.php', {

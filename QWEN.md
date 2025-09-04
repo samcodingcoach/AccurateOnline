@@ -380,3 +380,43 @@ rapi dan readable informatif, serta blur/hitamkan halaman selama proses
 perintah 18
 // Tampilkan hasil di itemStatus seperti sebelumnya line 811
 ini seharusnya di tampilkan pada modal ditengah layar itu juga. buat yang bagus rapi dan responsive, karna jika lama itu berantakan.
+
+perintah 19
+
+1. cek pada new item untuk switch Aktif S/N apakah mengirim body dengan value true/false
+2. setelah selesai tau nomor 1 adalah true/false pastikan tersimpan pada AccurateAPI.php public function saveItem($itemData) line 1561 membaca body aktif s/n tersebut. karna sebelumnya tidak tersimpan
+   saya pilih switch true tapi tidak tersimpan.
+
+perintah 20
+-pada AccurateAPI.php baris 1577
+$postData = [
+'no' => $itemData['no'],
+'itemCategoryName' => $itemData['itemCategoryName'],
+'itemType' => $itemData['itemType'] ?? 'INVENTORY',
+'name' => $itemData['name'],
+'unit1Name' => $itemData['unit1Name'],
+'manageSN' => $itemData['manageSN'],
+'serialNumberType' => $itemData['serialNumberType'] ?? 'UNIQUE'
+];
+
+        saya merasa serialNumberType ?? 'UNIQUE' tidak ada asal inputnya dari new_item.php,
+        jadikan UNIQUE sebagai nilai pasti saja.
+
+Perintah 21:
+saya rasa tidak tersimpan
+pastikan pada new_item.php <input type="checkbox" id="aktifSN" name="manageSN"> ini saat dikirim ke accurateAPI.php adalah aktif = true dan tidak aktif = false
+
+karna pada saat saya melakukan hardcode (managesn = true) langsung tersimpan, tetapi jika pakai nilai checkbox tidak tersimpan/terbawa
+
+AccurateAPI.php line 1577
+$postData = [
+'no' => $itemData['no'],
+'itemCategoryName' => $itemData['itemCategoryName'],
+'itemType' => $itemData['itemType'] ?? 'INVENTORY',
+'name' => $itemData['name'],
+'unit1Name' => $itemData['unit1Name'],
+'manageSN' => 'true',
+'serialNumberType' => 'UNIQUE'
+];
+
+pastikan yang dibawa manageSN
