@@ -310,3 +310,16 @@ tambahkan menu setelah Price Category Management Kelola Kategori Harga ada tombo
 
 perintah 7:
 pada file item/listv2.php gantilah tampilan data yang awalnya table menjadi list berbentuk card
+
+perintah 8:
+
+1. buatkan filter lain search berdasarkan nama barang
+2. perbaiki modal price level dengan desain yang lebih baik
+   - tab diganti dengan combobox, dropdownlist. memilih data cabang pakai dropdownlist
+
+perintah 9:
+
+1. pastikan modal Price Levels ukurannya fit, karna di punya saya height modalnya tidak proper ada data yang tidak terlihat dan tertutup
+2. pada modal price level bagian dropdown ada dua simbol v. hapus salah satu yang buruk
+
+perintah 10

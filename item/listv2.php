@@ -6,30 +6,37 @@ $api = new AccurateAPI();
 // Ambil parameter filter dari URL GET
 $startDate = $_GET['start'] ?? '';
 $endDate = $_GET['end'] ?? '';
+$searchName = $_GET['search'] ?? '';
 $limit = $_GET['limit'] ?? 100;
 
-// Jika ada filter tanggal, gunakan method filter
-if (!empty($startDate) && !empty($endDate)) {
-    // Validasi format tanggal
-    $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
-    $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
+// Jika ada filter tanggal atau pencarian nama, gunakan method filter
+if ((!empty($startDate) && !empty($endDate)) || !empty($searchName)) {
+    $filterParams = [];
     
-    if ($startFormatted && $endFormatted) {
-        // Format tanggal untuk API dengan waktu
-        $startWithTime = $startDate . ' 00:00:00';
-        $endWithTime = $endDate . ' 23:59:59';
+    // Filter tanggal
+    if (!empty($startDate) && !empty($endDate)) {
+        // Validasi format tanggal
+        $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
+        $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
         
-        $filterParams = [
-            'filter.lastUpdate.op' => 'BETWEEN',
-            'filter.lastUpdate.val[0]' => $startWithTime,
-            'filter.lastUpdate.val[1]' => $endWithTime
-        ];
-        
-        $result = $api->getItemListWithFilter($limit, 1, $filterParams);
-    } else {
-        // Format tanggal tidak valid, gunakan list biasa
-        $result = $api->getItemList($limit);
+        if ($startFormatted && $endFormatted) {
+            // Format tanggal untuk API dengan waktu
+            $startWithTime = $startDate . ' 00:00:00';
+            $endWithTime = $endDate . ' 23:59:59';
+            
+            $filterParams['filter.lastUpdate.op'] = 'BETWEEN';
+            $filterParams['filter.lastUpdate.val[0]'] = $startWithTime;
+            $filterParams['filter.lastUpdate.val[1]'] = $endWithTime;
+        }
     }
+    
+    // Filter pencarian nama
+    if (!empty($searchName)) {
+        $filterParams['filter.name.op'] = 'LIKE';
+        $filterParams['filter.name.val'] = $searchName;
+    }
+    
+    $result = $api->getItemListWithFilter($limit, 1, $filterParams);
 } else {
     // Tidak ada filter, gunakan list biasa
     $result = $api->getItemList($limit);
@@ -41,10 +48,17 @@ if ($result['success'] && isset($result['data']['d'])) {
 }
 
 // Status filter
-$isFiltered = !empty($startDate) && !empty($endDate);
+$isFiltered = (!empty($startDate) && !empty($endDate)) || !empty($searchName);
 $filterStatus = '';
-if ($isFiltered) {
+if (!empty($startDate) && !empty($endDate)) {
     $filterStatus = "Filter: {$startDate} - {$endDate}";
+}
+if (!empty($searchName)) {
+    if (!empty($filterStatus)) {
+        $filterStatus .= " & Nama: {$searchName}";
+    } else {
+        $filterStatus = "Nama: {$searchName}";
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -84,8 +98,8 @@ if ($isFiltered) {
                 <h2 class="text-xl font-semibold">Data Barang</h2>
                 
                 <!-- Filter Form -->
-                <div class="flex items-center gap-4">
-                    <form method="GET" class="flex items-center gap-3">
+                <div class="flex flex-col md:flex-row md:items-center gap-4">
+                    <form method="GET" class="flex flex-col md:flex-row md:items-center gap-3">
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-medium text-gray-700">Dari:</label>
                             <input type="date" 
@@ -114,6 +128,16 @@ if ($isFiltered) {
                                    ?>"
                                    class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <input type="hidden" name="end" id="end_hidden" value="<?php echo htmlspecialchars($endDate); ?>">
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700">Nama:</label>
+                            <input type="text" 
+                                   name="search" 
+                                   id="search"
+                                   value="<?php echo htmlspecialchars($searchName); ?>"
+                                   placeholder="Cari nama barang..."
+                                   class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         
                         <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
@@ -333,7 +357,7 @@ if ($isFiltered) {
     <!-- Modal untuk Price Levels -->
     <div id="priceLevelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-96 overflow-hidden">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-hidden">
                 <div class="flex items-center justify-between p-6 border-b">
                     <h3 class="text-lg font-semibold text-gray-900">
                         <i class="fas fa-tags text-orange-600 mr-2"></i>
@@ -351,17 +375,19 @@ if ($isFiltered) {
                     </div>
                     
                     <div id="priceLevelContent" class="hidden">
-                        <!-- Tab Navigation -->
-                        <div class="border-b border-gray-200 mb-4">
-                            <div class="overflow-x-auto">
-                                <nav class="-mb-px flex space-x-2 min-w-max" id="branchTabs">
-                                    <!-- Tabs akan diisi via JavaScript -->
-                                </nav>
+                        <!-- Dropdown Navigation -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Cabang:</label>
+                            <div class="relative">
+                                <select id="branchSelect" onchange="switchBranch()" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                    <!-- Options akan diisi via JavaScript -->
+                                </select>
                             </div>
                         </div>
                         
-                        <!-- Tab Content -->
-                        <div class="overflow-y-auto max-h-64" id="tabContent">
+                        <!-- Content -->
+                        <div class="overflow-y-auto max-h-96" id="branchContent">
                             <!-- Content akan diisi via JavaScript -->
                         </div>
                     </div>
@@ -396,8 +422,8 @@ if ($isFiltered) {
             const content = document.getElementById('priceLevelContent');
             const error = document.getElementById('priceLevelError');
             const modalTitle = document.getElementById('modalItemName');
-            const tabsContainer = document.getElementById('branchTabs');
-            const tabContent = document.getElementById('tabContent');
+            const branchSelect = document.getElementById('branchSelect');
+            const branchContent = document.getElementById('branchContent');
             
             // Reset modal state
             modal.classList.remove('hidden');
@@ -430,71 +456,29 @@ if ($isFiltered) {
                 const data = result.data;
                 modalTitle.textContent = `${data.itemName} (#${data.itemNo})`;
                 
-                // Build tab interface
+                // Store data for later use
+                window.priceLevelData = data;
+                
+                // Build dropdown interface
                 if (!data.groupedPrices || data.groupedPrices.length === 0) {
-                    tabContent.innerHTML = `
+                    branchContent.innerHTML = `
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-info-circle text-2xl mb-2"></i>
                             <p>No price levels found for this item</p>
                         </div>
                     `;
-                    tabsContainer.innerHTML = '';
+                    branchSelect.innerHTML = '<option value="">No branches available</option>';
                 } else {
-                    // Build tabs
-                    let tabsHtml = '';
+                    // Build dropdown options
+                    let optionsHtml = '';
                     data.groupedPrices.forEach((group, index) => {
-                        const isActive = index === 0;
                         const branchId = `branch-${group.branchId || index}`;
-                        tabsHtml += `
-                            <button onclick="switchTab('${branchId}')" 
-                                    id="tab-${branchId}"
-                                    class="tab-button ${isActive ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'} 
-                                           whitespace-nowrap py-2 px-3 border-b-2 font-medium text-sm flex items-center rounded-t-lg transition-all duration-200 min-w-0 flex-shrink-0">
-                                <i class="fas fa-building mr-1 text-xs"></i>
-                                <span class="truncate max-w-32">${group.branchName}</span>
-                            </button>
-                        `;
+                        optionsHtml += `<option value="${branchId}">${group.branchName}</option>`;
                     });
-                    tabsContainer.innerHTML = tabsHtml;
+                    branchSelect.innerHTML = optionsHtml;
                     
-                    // Build tab content
-                    let contentHtml = '';
-                    data.groupedPrices.forEach((group, index) => {
-                        const isActive = index === 0;
-                        const branchId = `branch-${group.branchId || index}`;
-                        contentHtml += `
-                            <div id="content-${branchId}" class="tab-content ${isActive ? '' : 'hidden'}">
-                                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                    <table class="min-w-full">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price Category</th>
-                                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
-                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Effective Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                        `;
-                        
-                        group.prices.forEach(price => {
-                            contentHtml += `
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm text-gray-900">${price.categoryName}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900 text-right font-medium">${formatCurrency(price.price)}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900">${price.effectiveDate}</td>
-                                </tr>
-                            `;
-                        });
-                        
-                        contentHtml += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    tabContent.innerHTML = contentHtml;
+                    // Display content for first branch
+                    displayBranchContent(0);
                 }
                 
                 // Show content
@@ -508,32 +492,80 @@ if ($isFiltered) {
             }
         }
 
-        // Function untuk switch tab
-        function switchTab(branchId) {
-            // Hide all tab contents
-            const allTabContents = document.querySelectorAll('.tab-content');
-            allTabContents.forEach(content => {
-                content.classList.add('hidden');
-            });
+        // Function to display content for a specific branch
+        function displayBranchContent(branchIndex) {
+            const branchContent = document.getElementById('branchContent');
+            const data = window.priceLevelData;
             
-            // Remove active state from all tabs
-            const allTabs = document.querySelectorAll('.tab-button');
-            allTabs.forEach(tab => {
-                tab.classList.remove('border-blue-500', 'text-blue-600', 'bg-blue-50');
-                tab.classList.add('border-transparent', 'text-gray-500');
-            });
-            
-            // Show selected tab content
-            const selectedContent = document.getElementById(`content-${branchId}`);
-            if (selectedContent) {
-                selectedContent.classList.remove('hidden');
+            if (!data || !data.groupedPrices || data.groupedPrices.length === 0) {
+                branchContent.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-info-circle text-2xl mb-2"></i>
+                        <p>No price levels found for this item</p>
+                    </div>
+                `;
+                return;
             }
             
-            // Add active state to selected tab
-            const selectedTab = document.getElementById(`tab-${branchId}`);
-            if (selectedTab) {
-                selectedTab.classList.remove('border-transparent', 'text-gray-500');
-                selectedTab.classList.add('border-blue-500', 'text-blue-600', 'bg-blue-50');
+            const group = data.groupedPrices[branchIndex];
+            if (!group) {
+                branchContent.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-info-circle text-2xl mb-2"></i>
+                        <p>No data available for selected branch</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let contentHtml = `
+                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price Category</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Effective Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+            `;
+            
+            group.prices.forEach(price => {
+                contentHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-900">${price.categoryName}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900 text-right font-medium">${formatCurrency(price.price)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${price.effectiveDate}</td>
+                    </tr>
+                `;
+            });
+            
+            contentHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            branchContent.innerHTML = contentHtml;
+        }
+
+        // Function untuk switch branch
+        function switchBranch() {
+            const branchSelect = document.getElementById('branchSelect');
+            const selectedBranchId = branchSelect.value;
+            
+            // Find the index of the selected branch
+            const data = window.priceLevelData;
+            if (!data || !data.groupedPrices) return;
+            
+            const selectedIndex = data.groupedPrices.findIndex((group, index) => {
+                const branchId = `branch-${group.branchId || index}`;
+                return branchId === selectedBranchId;
+            });
+            
+            if (selectedIndex !== -1) {
+                displayBranchContent(selectedIndex);
             }
         }
 
