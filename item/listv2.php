@@ -6,37 +6,36 @@ $api = new AccurateAPI();
 // Ambil parameter filter dari URL GET
 $startDate = $_GET['start'] ?? '';
 $endDate = $_GET['end'] ?? '';
-$searchName = $_GET['search'] ?? '';
 $limit = $_GET['limit'] ?? 100;
+$action = $_GET['action'] ?? ''; // Untuk mengetahui jenis filter yang digunakan
 
-// Jika ada filter tanggal atau pencarian nama, gunakan method filter
-if ((!empty($startDate) && !empty($endDate)) || !empty($searchName)) {
-    $filterParams = [];
+// Inisialisasi filter parameters
+$filterParams = [];
+
+// Filter berdasarkan jenis filter yang dipilih
+if ($action == 'filter_date' && !empty($_GET['start_picker']) && !empty($_GET['end_picker'])) {
+    // Konversi tanggal dari format picker (YYYY-MM-DD) ke format API (dd/mm/yyyy)
+    $startDate = DateTime::createFromFormat('Y-m-d', $_GET['start_picker'])->format('d/m/Y');
+    $endDate = DateTime::createFromFormat('Y-m-d', $_GET['end_picker'])->format('d/m/Y');
     
     // Filter tanggal
-    if (!empty($startDate) && !empty($endDate)) {
-        // Validasi format tanggal
-        $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
-        $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
+    $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
+    $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
+    
+    if ($startFormatted && $endFormatted) {
+        // Format tanggal untuk API dengan waktu
+        $startWithTime = $startDate . ' 00:00:00';
+        $endWithTime = $endDate . ' 23:59:59';
         
-        if ($startFormatted && $endFormatted) {
-            // Format tanggal untuk API dengan waktu
-            $startWithTime = $startDate . ' 00:00:00';
-            $endWithTime = $endDate . ' 23:59:59';
-            
-            $filterParams['filter.lastUpdate.op'] = 'BETWEEN';
-            $filterParams['filter.lastUpdate.val[0]'] = $startWithTime;
-            $filterParams['filter.lastUpdate.val[1]'] = $endWithTime;
-        }
+        $filterParams['filter.lastUpdate.op'] = 'BETWEEN';
+        $filterParams['filter.lastUpdate.val[0]'] = $startWithTime;
+        $filterParams['filter.lastUpdate.val[1]'] = $endWithTime;
     }
-    
-    // Filter pencarian nama
-    if (!empty($searchName)) {
-        $filterParams['filter.name.op'] = 'LIKE';
-        $filterParams['filter.name.val'] = $searchName;
-    }
-    
-    $result = $api->getItemListWithFilter($limit, 1, $filterParams);
+}
+
+// Lakukan pemanggilan API sesuai dengan filter yang ada
+if (!empty($filterParams)) {
+    $result = $api->getItemList($limit, 1, $filterParams);
 } else {
     // Tidak ada filter, gunakan list biasa
     $result = $api->getItemList($limit);
@@ -48,17 +47,10 @@ if ($result['success'] && isset($result['data']['d'])) {
 }
 
 // Status filter
-$isFiltered = (!empty($startDate) && !empty($endDate)) || !empty($searchName);
+$isFiltered = ($action == 'filter_date' && !empty($startDate) && !empty($endDate));
 $filterStatus = '';
-if (!empty($startDate) && !empty($endDate)) {
-    $filterStatus = "Filter: {$startDate} - {$endDate}";
-}
-if (!empty($searchName)) {
-    if (!empty($filterStatus)) {
-        $filterStatus .= " & Nama: {$searchName}";
-    } else {
-        $filterStatus = "Nama: {$searchName}";
-    }
+if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
+    $filterStatus = "Filter Tanggal: {$startDate} - {$endDate}";
 }
 ?>
 <!DOCTYPE html>
@@ -99,7 +91,7 @@ if (!empty($searchName)) {
                 
                 <!-- Filter Form -->
                 <div class="flex flex-col md:flex-row md:items-center gap-4">
-                    <form method="GET" class="flex flex-col md:flex-row md:items-center gap-3">
+                    <form method="GET" class="flex flex-col md:flex-row md:items-center gap-3" id="filterForm">
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-medium text-gray-700">Dari:</label>
                             <input type="date" 
@@ -112,7 +104,6 @@ if (!empty($searchName)) {
                                    }
                                    ?>"
                                    class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <input type="hidden" name="start" id="start_hidden" value="<?php echo htmlspecialchars($startDate); ?>">
                         </div>
                         
                         <div class="flex items-center gap-2">
@@ -127,24 +118,13 @@ if (!empty($searchName)) {
                                    }
                                    ?>"
                                    class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <input type="hidden" name="end" id="end_hidden" value="<?php echo htmlspecialchars($endDate); ?>">
                         </div>
                         
-                        <div class="flex items-center gap-2">
-                            <label class="text-sm font-medium text-gray-700">Nama:</label>
-                            <input type="text" 
-                                   name="search" 
-                                   id="search"
-                                   value="<?php echo htmlspecialchars($searchName); ?>"
-                                   placeholder="Cari nama barang..."
-                                   class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
-                            <i class="fas fa-search mr-1"></i>Filter
+                        <button type="submit" name="action" value="filter_date" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filter Tanggal
                         </button>
                         
-                        <?php if ($isFiltered): ?>
+                        <?php if (!empty($startDate) || !empty($endDate)): ?>
                             <a href="listv2.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm">
                                 <i class="fas fa-times mr-1"></i>Reset
                             </a>
@@ -188,11 +168,11 @@ if (!empty($searchName)) {
                         <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
                             <div class="p-5">
                                 <div class="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 class="text-lg font-bold text-gray-900 truncate"><?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?></h3>
+                                    <div class="min-w-0">
+                                        <h3 class="text-lg font-bold text-gray-900 truncate" title="<?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?>"><?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?></h3>
                                         <p class="text-sm text-gray-500"><?php echo htmlspecialchars($item['no'] ?? 'N/A'); ?></p>
                                     </div>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0
                                         <?php 
                                         if (isset($item['availableToSell'])) {
                                             $stok = $item['availableToSell'];
@@ -288,7 +268,7 @@ if (!empty($searchName)) {
                     <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
                     <p class="text-gray-600">
                         <?php if ($isFiltered): ?>
-                            Tidak ada data barang untuk periode <?php echo $filterStatus; ?>
+                            Tidak ada data barang untuk <?php echo $filterStatus; ?>
                         <?php else: ?>
                             Tidak ada data barang.
                         <?php endif; ?>
@@ -304,31 +284,6 @@ if (!empty($searchName)) {
     </main>
 
     <script>
-        // Convert date picker values to dd/mm/yyyy format before form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const startPicker = document.getElementById('start_picker');
-            const endPicker = document.getElementById('end_picker');
-            const startHidden = document.getElementById('start_hidden');
-            const endHidden = document.getElementById('end_hidden');
-            
-            // Convert YYYY-MM-DD to DD/MM/YYYY
-            if (startPicker.value) {
-                const startDate = new Date(startPicker.value);
-                const startFormatted = String(startDate.getDate()).padStart(2, '0') + '/' + 
-                                     String(startDate.getMonth() + 1).padStart(2, '0') + '/' + 
-                                     startDate.getFullYear();
-                startHidden.value = startFormatted;
-            }
-            
-            if (endPicker.value) {
-                const endDate = new Date(endPicker.value);
-                const endFormatted = String(endDate.getDate()).padStart(2, '0') + '/' + 
-                                   String(endDate.getMonth() + 1).padStart(2, '0') + '/' + 
-                                   endDate.getFullYear();
-                endHidden.value = endFormatted;
-            }
-        });
-
         // Quick filter functions
         function setQuickFilter(days) {
             const today = new Date();
@@ -348,7 +303,16 @@ if (!empty($searchName)) {
                     e.preventDefault();
                     const days = parseInt(this.dataset.days);
                     setQuickFilter(days);
-                    document.querySelector('form').submit();
+                    
+                    // Set action to filter_date for quick filters
+                    const form = document.querySelector('form');
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = 'filter_date';
+                    form.appendChild(actionInput);
+                    
+                    form.submit();
                 });
             });
         });

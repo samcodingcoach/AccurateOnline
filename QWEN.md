@@ -347,3 +347,20 @@ perintah 10
 perintah 11:
 ubah urutan kolom modal price level
 Price Category Effective Date Price
+
+perintah 12:
+
+nuansa/item/listv2.php pada halaman ini, filter tanggal itu berbeda dengan pencarian nama barang bukan satu perintah
+
+akhirnya error
+Fatal error: Uncaught Error: Call to undefined method AccurateAPI::getItemListWithFilter() in C:\xampp\htdocs\nuansa\item\listv2.php:39 Stack trace: #0 {main} thrown in C:\xampp\htdocs\nuansa\item\listv2.php on line 39
+
+Perintah 13:
+ketika saya masukan inputan ke misal 'Poco M5 Pro' ke input search klik filter nama, url yang jadi adalah
+http://localhost/nuansa/item/listv2.php?start_picker=&end_picker=&search=Poco+M5+Pro&action=filter_name
+Filter Nama: Poco M5 Pro
+(9 items ditemukan)
+padahal datanya cuma 1 menurut table
+
+Perintah 14:
+-pada list card untuk name sebaiknya pakai teknik string Food Chopper Motto CN 2505 menjadi Food Chopper Motto... jika terlalu panjang apalagi pada saat mobile preview
