@@ -370,6 +370,26 @@ if ($units_json) {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             transform: translateY(-2px);
         }
+        
+        /* Overlay styling */
+        #savingOverlay {
+            transition: opacity 0.3s ease;
+        }
+        
+        #savingOverlay .bg-white {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -670,9 +690,11 @@ if ($units_json) {
             itemStatus.classList.add('hidden');
             
             try {
-                // STEP 1: Save Item
-                itemLoading.innerHTML = '<div class="inline-flex items-center px-6 py-3 bg-blue-50 text-blue-700 rounded-xl"><i class="fas fa-spinner fa-spin mr-3"></i><span>Menyimpan item...</span></div>';
+                // Tampilkan overlay saat proses dimulai
+                showSavingOverlay();
+                updateProgress(10, 'Menyimpan item...');
                 
+                // STEP 1: Save Item
                 const itemData = {
                     no: document.getElementById('kodeBarang').value,
                     itemCategoryName: $('#kategori').val(), // Get value from Select2
@@ -700,8 +722,10 @@ if ($units_json) {
                 savedItemNo = document.getElementById('kodeBarang').value;
                 console.log(`Item saved successfully with item number: ${savedItemNo}`);
                 
+                updateProgress(30, 'Item berhasil disimpan');
+                
                 // STEP 2: Save Price Levels
-                itemLoading.innerHTML = '<div class="inline-flex items-center px-6 py-3 bg-orange-50 text-orange-700 rounded-xl"><i class="fas fa-spinner fa-spin mr-3"></i><span>Menyimpan harga...</span></div>';
+                updateProgress(40, 'Menyimpan harga...');
                 
                 const prices = [
                     { id: '50', price: parseNumber(document.getElementById('price1').value) },
@@ -715,6 +739,11 @@ if ($units_json) {
                 
                 let successCount = 0;
                 const results = [];
+                let processedCount = 0;
+                const totalToProcess = prices.filter(p => p.price !== '0' && p.price !== '' && p.price !== 0).length || 1;
+                
+                // Update progress untuk harga
+                updateProgress(50, `Menyimpan 0 dari ${totalToProcess} harga...`);
                 
                 // Save setiap price level
                 for (const priceLevel of prices) {
@@ -745,6 +774,9 @@ if ($units_json) {
                         const priceResult = await priceResponse.json();
                         console.log(`Price level ${priceLevel.id} response:`, priceResult);
                         
+                        processedCount++;
+                        updateProgress(50 + (processedCount / totalToProcess) * 40, `Menyimpan ${processedCount} dari ${totalToProcess} harga...`);
+                        
                         if (priceResult.success) {
                             successCount++;
                             results.push(`Level ${priceLevel.id}: ✅ Berhasil`);
@@ -754,45 +786,64 @@ if ($units_json) {
                         
                     } catch (error) {
                         results.push(`Level ${priceLevel.id}: ❌ ${error.message}`);
+                        processedCount++;
+                        updateProgress(50 + (processedCount / totalToProcess) * 40, `Menyimpan ${processedCount} dari ${totalToProcess} harga...`);
                     }
                     
-                    // Delay 500ms antar request untuk mencegah konflik
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    // Delay 300ms antar request untuk mencegah konflik
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 }
                 
                 // Show final results dengan detail
                 const totalAttempted = prices.filter(p => p.price !== '0' && p.price !== '' && p.price !== 0).length;
                 const totalSkipped = 7 - totalAttempted;
                 
-                // Show detailed results
-                let detailsHtml = '<div class="mt-3 text-sm"><strong>Detail:</strong><br>' + results.join('<br>') + '</div>';
+                updateProgress(95, 'Menampilkan hasil...');
                 
-                if (totalAttempted === 0) {
-                    // Hanya item yang disimpan, tidak ada price level
-                    itemStatus.className = 'status-message status-success';
-                    itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item berhasil disimpan! (Semua harga = 0, tidak disimpan) Mengalihkan ke daftar item...` + detailsHtml;
-                } else if (successCount === totalAttempted) {
-                    // Semua berhasil
-                    itemStatus.className = 'status-message status-success';
-                    itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item & semua harga berhasil disimpan! (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
-                } else if (successCount > 0) {
-                    // Sebagian berhasil
-                    itemStatus.className = 'status-message status-warning';
-                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, sebagian harga berhasil (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
-                } else {
-                    // Item berhasil tapi price level gagal semua
-                    itemStatus.className = 'status-message status-warning';
-                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, harga gagal (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
-                }
-                
-                itemStatus.classList.remove('hidden');
-                
-                // Auto redirect ke listv2.php setelah sukses
+                // Tampilkan hasil dalam modal di tengah layar
                 setTimeout(() => {
-                    window.location.href = 'listv2.php';
-                }, 3000); // Redirect setelah 3 detik
+                    updateProgress(100, 'Selesai!');
+                    
+                    // Sembunyikan overlay setelah delay singkat
+                    setTimeout(() => {
+                        hideSavingOverlay();
+                        
+                        // Tampilkan hasil di itemStatus seperti sebelumnya
+                        let detailsHtml = '<div class="mt-3 text-sm"><strong>Detail:</strong><br>' + results.join('<br>') + '</div>';
+                        
+                        if (totalAttempted === 0) {
+                            // Hanya item yang disimpan, tidak ada price level
+                            itemStatus.className = 'status-message status-success';
+                            itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item berhasil disimpan! (Semua harga = 0, tidak disimpan) Mengalihkan ke daftar item...` + detailsHtml;
+                        } else if (successCount === totalAttempted) {
+                            // Semua berhasil
+                            itemStatus.className = 'status-message status-success';
+                            itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item & semua harga berhasil disimpan! (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                        } else if (successCount > 0) {
+                            // Sebagian berhasil
+                            itemStatus.className = 'status-message status-warning';
+                            itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, sebagian harga berhasil (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                        } else {
+                            // Item berhasil tapi price level gagal semua
+                            itemStatus.className = 'status-message status-warning';
+                            itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, harga gagal (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                        }
+                        
+                        itemStatus.classList.remove('hidden');
+                        
+                        // Auto redirect ke listv2.php setelah sukses
+                        setTimeout(() => {
+                            window.location.href = 'listv2.php';
+                        }, 3000); // Redirect setelah 3 detik
+                        
+                    }, 500);
+                    
+                }, 500);
                 
             } catch (error) {
+                // Sembunyikan overlay dan tampilkan error
+                hideSavingOverlay();
+                
                 itemStatus.className = 'status-message status-error';
                 itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Error: ${error.message}`;
                 itemStatus.classList.remove('hidden');
@@ -804,6 +855,51 @@ if ($units_json) {
                 itemLoading.classList.add('hidden');
             }, 1000);
         });
+
+        // Overlay untuk proses penyimpanan
+        function showSavingOverlay() {
+            const overlay = document.getElementById('savingOverlay');
+            overlay.classList.remove('hidden');
+            // Cegah scrolling pada body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideSavingOverlay() {
+            const overlay = document.getElementById('savingOverlay');
+            overlay.classList.add('hidden');
+            // Aktifkan kembali scrolling pada body
+            document.body.style.overflow = '';
+        }
+
+        function updateProgress(percent, message) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressBar) {
+                progressBar.style.width = percent + '%';
+            }
+            
+            if (progressText) {
+                progressText.textContent = Math.round(percent) + '% ' + (message || '');
+            }
+        }
     </script>
+
+    <!-- Overlay untuk proses penyimpanan -->
+    <div id="savingOverlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                    <i class="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Menyimpan Item</h3>
+                <p class="text-gray-600 mb-4">Mohon tunggu, sedang menyimpan data item dan harga...</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+                <div id="progressText" class="text-sm text-gray-500 mt-2">0%</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

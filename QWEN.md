@@ -371,3 +371,8 @@ perintah 15
 
 perintah 16
 -redesign nuansa/item/new_item.php agar lebih baik dan proper dari sisi layout, responsive dll
+
+perintah 17 di new_item.php
+
+-saat simpan item dan harga ada info yang ada di 699-799, tolong redesign dengan menempatkannya di tengah-tengah
+rapi dan readable informatif, serta blur/hitamkan halaman selama proses
