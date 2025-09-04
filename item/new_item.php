@@ -380,6 +380,15 @@ if ($units_json) {
             animation: fadeInUp 0.3s ease-out;
         }
         
+        /* Result modal styling */
+        #resultModal {
+            transition: opacity 0.3s ease;
+        }
+        
+        #resultModal .bg-white {
+            animation: fadeInScale 0.3s ease-out;
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -388,6 +397,28 @@ if ($units_json) {
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Responsive adjustments for modals */
+        @media (max-width: 640px) {
+            #resultModal .max-w-2xl {
+                max-width: calc(100% - 2rem);
+            }
+            
+            #resultModal .p-6 {
+                padding: 1rem;
             }
         }
     </style>
@@ -808,45 +839,121 @@ if ($units_json) {
                     setTimeout(() => {
                         hideSavingOverlay();
                         
-                        // Tampilkan hasil di itemStatus seperti sebelumnya
-                        let detailsHtml = '<div class="mt-3 text-sm"><strong>Detail:</strong><br>' + results.join('<br>') + '</div>';
+                        // Buat konten hasil untuk modal
+                        let detailsHtml = '<div class="mt-4"><h4 class="font-semibold text-gray-900 mb-2">Detail:</h4><ul class="space-y-2">';
+                        results.forEach(result => {
+                            // Parsing hasil untuk menentukan icon dan warna
+                            let icon = 'fa-circle';
+                            let color = 'text-gray-500';
+                            if (result.includes('✅')) {
+                                icon = 'fa-check-circle';
+                                color = 'text-green-600';
+                            } else if (result.includes('❌')) {
+                                icon = 'fa-times-circle';
+                                color = 'text-red-600';
+                            } else if (result.includes('⏭️')) {
+                                icon = 'fa-forward';
+                                color = 'text-blue-600';
+                            }
+                            
+                            detailsHtml += `<li class="flex items-start">
+                                <i class="fas ${icon} ${color} mt-1 mr-2"></i>
+                                <span>${result.replace(/✅|❌|⏭️/, '')}</span>
+                            </li>`;
+                        });
+                        detailsHtml += '</ul></div>';
                         
+                        // Tentukan judul dan status
+                        let title = '';
+                        let isSuccess = true;
                         if (totalAttempted === 0) {
-                            // Hanya item yang disimpan, tidak ada price level
-                            itemStatus.className = 'status-message status-success';
-                            itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item berhasil disimpan! (Semua harga = 0, tidak disimpan) Mengalihkan ke daftar item...` + detailsHtml;
+                            title = 'Item Berhasil Disimpan';
+                            isSuccess = true;
                         } else if (successCount === totalAttempted) {
-                            // Semua berhasil
-                            itemStatus.className = 'status-message status-success';
-                            itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item & semua harga berhasil disimpan! (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                            title = 'Semua Data Berhasil Disimpan';
+                            isSuccess = true;
                         } else if (successCount > 0) {
-                            // Sebagian berhasil
-                            itemStatus.className = 'status-message status-warning';
-                            itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, sebagian harga berhasil (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                            title = 'Sebagian Data Berhasil Disimpan';
+                            isSuccess = false;
                         } else {
-                            // Item berhasil tapi price level gagal semua
-                            itemStatus.className = 'status-message status-warning';
-                            itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, harga gagal (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                            title = 'Gagal Menyimpan Data';
+                            isSuccess = false;
                         }
                         
-                        itemStatus.classList.remove('hidden');
+                        // Buat konten utama
+                        let mainContent = `
+                            <div class="text-center mb-6">
+                                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full ${isSuccess ? 'bg-green-100' : 'bg-yellow-100'} mb-4">
+                                    <i class="fas ${isSuccess ? 'fa-check-circle text-green-600' : 'fa-exclamation-triangle text-yellow-600'} text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">${title}</h3>
+                                <p class="text-gray-600">
+                                    ${totalAttempted === 0 ? 
+                                        'Item berhasil disimpan! (Semua harga = 0, tidak disimpan)' : 
+                                        `Item & ${successCount} dari ${totalAttempted} harga berhasil disimpan`}
+                                </p>
+                            </div>
+                            ${detailsHtml}
+                            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                                <p class="text-center text-blue-800">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Mengalihkan ke daftar item dalam 3 detik...
+                                </p>
+                            </div>
+                        `;
                         
-                        // Auto redirect ke listv2.php setelah sukses
-                        setTimeout(() => {
+                        // Simpan timeout untuk redirect
+                        window.redirectTimeout = setTimeout(() => {
                             window.location.href = 'listv2.php';
+                            // Hapus referensi timeout setelah digunakan
+                            window.redirectTimeout = null;
                         }, 3000); // Redirect setelah 3 detik
+                        
+                        // Tampilkan dalam modal
+                        showResultModal(title, mainContent, isSuccess);
                         
                     }, 500);
                     
                 }, 500);
                 
             } catch (error) {
-                // Sembunyikan overlay dan tampilkan error
+                // Sembunyikan overlay dan tampilkan error dalam modal
                 hideSavingOverlay();
                 
-                itemStatus.className = 'status-message status-error';
-                itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Error: ${error.message}`;
-                itemStatus.classList.remove('hidden');
+                // Buat konten error untuk modal
+                let errorContent = `
+                    <div class="text-center mb-6">
+                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Terjadi Kesalahan</h3>
+                        <p class="text-gray-600">Gagal menyimpan item dan harga</p>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1 mr-2"></i>
+                            <div>
+                                <h4 class="font-semibold text-red-800">Error Details:</h4>
+                                <p class="text-red-700 mt-1">${error.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-center text-blue-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Silakan periksa kembali data dan coba lagi
+                        </p>
+                    </div>
+                `;
+                
+                // Hapus timeout redirect jika ada
+                if (window.redirectTimeout) {
+                    clearTimeout(window.redirectTimeout);
+                    window.redirectTimeout = null;
+                }
+                
+                // Tampilkan dalam modal
+                showResultModal('Error', errorContent, false);
             }
             
             // Re-enable button dan hide loading
@@ -883,6 +990,44 @@ if ($units_json) {
                 progressText.textContent = Math.round(percent) + '% ' + (message || '');
             }
         }
+        
+        // Fungsi untuk menampilkan hasil dalam modal
+        function showResultModal(title, content, isSuccess) {
+            const modal = document.getElementById('resultModal');
+            const contentDiv = document.getElementById('resultContent');
+            
+            // Set judul dan konten modal
+            document.querySelector('#resultModal h3').innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle text-green-500' : 'fa-exclamation-triangle text-yellow-500'} mr-2"></i>${title}`;
+            contentDiv.innerHTML = content;
+            
+            // Tampilkan modal
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Fungsi untuk menutup modal hasil
+        function closeResultModal() {
+            const modal = document.getElementById('resultModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+            
+            // Periksa apakah sedang dalam proses redirect
+            if (window.redirectTimeout) {
+                // Jika ya, lanjutkan redirect dan hapus timeout
+                const timeoutId = window.redirectTimeout;
+                window.redirectTimeout = null;
+                clearTimeout(timeoutId);
+                window.location.href = 'listv2.php';
+            }
+        }
+        
+        // Tambahkan event listener untuk tombol ESC
+        document.addEventListener('keydown', function(event) {
+            const resultModal = document.getElementById('resultModal');
+            if (event.key === 'Escape' && !resultModal.classList.contains('hidden')) {
+                closeResultModal();
+            }
+        });
     </script>
 
     <!-- Overlay untuk proses penyimpanan -->
@@ -898,6 +1043,34 @@ if ($units_json) {
                     <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
                 </div>
                 <div id="progressText" class="text-sm text-gray-500 mt-2">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk menampilkan hasil -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="if (event.target === this) closeResultModal()">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-info-circle mr-2"></i>Hasil Penyimpanan
+                </h3>
+                <button onclick="closeResultModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow p-6">
+                <div id="resultContent" class="space-y-4">
+                    <!-- Hasil akan diisi via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="p-6 border-t bg-gray-50">
+                <div class="flex justify-end">
+                    <button onclick="closeResultModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -376,3 +376,7 @@ perintah 17 di new_item.php
 
 -saat simpan item dan harga ada info yang ada di 699-799, tolong redesign dengan menempatkannya di tengah-tengah
 rapi dan readable informatif, serta blur/hitamkan halaman selama proses
+
+perintah 18
+// Tampilkan hasil di itemStatus seperti sebelumnya line 811
+ini seharusnya di tampilkan pada modal ditengah layar itu juga. buat yang bagus rapi dan responsive, karna jika lama itu berantakan.
