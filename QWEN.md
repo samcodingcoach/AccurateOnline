@@ -307,3 +307,6 @@ Penjelasan kode:
 
 Perintah 6:
 tambahkan menu setelah Price Category Management Kelola Kategori Harga ada tombol untuk menuju sellingprice/index.php dan API JSON dapat membuka modal yang memunculkan list_spa.php
+
+perintah 7:
+pada file item/listv2.php gantilah tampilan data yang awalnya table menjadi list berbentuk card

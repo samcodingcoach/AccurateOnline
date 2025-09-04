@@ -156,109 +156,108 @@ if ($isFiltered) {
                         30 hari terakhir
                     </button>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Barang</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok Tersedia</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Beli</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Jual</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price Level</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Terakhir Diperbarui</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <?php 
-                            $noUrut = 1;
-                            foreach ($items as $item): ?>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php echo $noUrut++; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php echo htmlspecialchars($item['no'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php echo htmlspecialchars($item['itemTypeName'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                <!-- Card Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php 
+                    $noUrut = 1;
+                    foreach ($items as $item): ?>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900 truncate"><?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?></h3>
+                                        <p class="text-sm text-gray-500"><?php echo htmlspecialchars($item['no'] ?? 'N/A'); ?></p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
                                         <?php 
                                         if (isset($item['availableToSell'])) {
                                             $stok = $item['availableToSell'];
                                             if ($stok > 0) {
-                                                echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">';
-                                                echo number_format($stok, 0, ',', '.');
-                                                echo '</span>';
+                                                echo 'bg-green-100 text-green-800';
                                             } elseif ($stok == 0) {
-                                                echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">';
-                                                echo 'Habis';
-                                                echo '</span>';
+                                                echo 'bg-red-100 text-red-800';
                                             } else {
-                                                echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">';
-                                                echo number_format($stok, 0, ',', '.');
-                                                echo '</span>';
+                                                echo 'bg-yellow-100 text-yellow-800';
                                             }
                                         } else {
-                                            echo '<span class="text-gray-400 italic">-</span>';
+                                            echo 'bg-gray-100 text-gray-800';
+                                        }
+                                        ?>">
+                                        <?php 
+                                        if (isset($item['availableToSell'])) {
+                                            $stok = $item['availableToSell'];
+                                            if ($stok > 0) {
+                                                echo number_format($stok, 0, ',', '.');
+                                            } elseif ($stok == 0) {
+                                                echo 'Habis';
+                                            } else {
+                                                echo number_format($stok, 0, ',', '.');
+                                            }
+                                        } else {
+                                            echo '-';
                                         }
                                         ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                                        <?php echo formatCurrency($item['vendorPrice'] ?? 0); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                                        <?php echo formatCurrency($item['unitPrice'] ?? 0); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                        <button onclick="showPriceLevels(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['name'], ENT_QUOTES); ?>')" 
-                                           class="bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1 rounded-lg text-xs font-medium">
-                                            <i class="fas fa-tags mr-1"></i>View Levels
-                                        </button>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php 
-                                        if (!empty($item['lastUpdate'])) {
-                                            try {
-                                                // API mengembalikan format "dd/mm/yyyy HH:mm:ss"
-                                                $lastUpdate = DateTime::createFromFormat('d/m/Y H:i:s', $item['lastUpdate']);
-                                                
-                                                // Jika gagal parsing dengan format lengkap, coba format tanpa detik
-                                                if (!$lastUpdate) {
-                                                    $lastUpdate = DateTime::createFromFormat('d/m/Y H:i', $item['lastUpdate']);
-                                                }
-                                                
-                                                if ($lastUpdate) {
-                                                    echo $lastUpdate->format('d/m/Y H:i');
-                                                } else {
-                                                    // Jika masih gagal, tampilkan raw value
+                                    </span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-500">Jenis:</span>
+                                        <span class="text-sm font-medium"><?php echo htmlspecialchars($item['itemTypeName'] ?? 'N/A'); ?></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-500">Harga Beli:</span>
+                                        <span class="text-sm font-medium"><?php echo formatCurrency($item['vendorPrice'] ?? 0); ?></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-500">Harga Jual:</span>
+                                        <span class="text-sm font-medium"><?php echo formatCurrency($item['unitPrice'] ?? 0); ?></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-500">Terakhir Diperbarui:</span>
+                                        <span class="text-sm font-medium">
+                                            <?php 
+                                            if (!empty($item['lastUpdate'])) {
+                                                try {
+                                                    // API mengembalikan format "dd/mm/yyyy HH:mm:ss"
+                                                    $lastUpdate = DateTime::createFromFormat('d/m/Y H:i:s', $item['lastUpdate']);
+                                                    
+                                                    // Jika gagal parsing dengan format lengkap, coba format tanpa detik
+                                                    if (!$lastUpdate) {
+                                                        $lastUpdate = DateTime::createFromFormat('d/m/Y H:i', $item['lastUpdate']);
+                                                    }
+                                                    
+                                                    if ($lastUpdate) {
+                                                        echo $lastUpdate->format('d/m/Y H:i');
+                                                    } else {
+                                                        // Jika masih gagal, tampilkan raw value
+                                                        echo htmlspecialchars($item['lastUpdate']);
+                                                    }
+                                                } catch (Exception $e) {
+                                                    // Fallback: tampilkan raw value jika parsing gagal
                                                     echo htmlspecialchars($item['lastUpdate']);
                                                 }
-                                            } catch (Exception $e) {
-                                                // Fallback: tampilkan raw value jika parsing gagal
-                                                echo htmlspecialchars($item['lastUpdate']);
+                                            } else {
+                                                echo 'N/A';
                                             }
-                                        } else {
-                                            echo 'N/A';
-                                        }
-                                        ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="itemv3.php?id=<?php echo $item['id']; ?>" class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye mr-1"></i>Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between gap-2">
+                                    <button onclick="showPriceLevels(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['name'], ENT_QUOTES); ?>')" 
+                                        class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-800 py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                                        <i class="fas fa-tags mr-1"></i>Levels
+                                    </button>
+                                    <a href="itemv3.php?id=<?php echo $item['id']; ?>" 
+                                        class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                                        <i class="fas fa-eye mr-1"></i>Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             <?php else: ?>
                 <div class="text-center py-8">
