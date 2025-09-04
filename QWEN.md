@@ -368,3 +368,6 @@ Perintah 14:
 perintah 15
 -perbaiki responsive filter tanggal
 -perbaiki responsive pada bagian Daftar Barang dan dua tombol Add new item, dashboard
+
+perintah 16
+-redesign nuansa/item/new_item.php agar lebih baik dan proper dari sisi layout, responsive dll

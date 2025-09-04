@@ -46,28 +46,122 @@ if ($units_json) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tambah Item Baru - Nuansa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .form-container {
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        .form-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .form-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            background-color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            color: white;
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(107, 114, 128, 0.4);
         }
         
         .price-input {
             text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
         }
         
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 60px;
+            height: 30px;
         }
         
         .switch input {
@@ -83,63 +177,220 @@ if ($units_json) {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #e5e7eb;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 30px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 24px;
+            width: 24px;
             left: 3px;
             bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         input:checked + .slider {
-            background-color: #3b82f6;
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
         }
         
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(30px);
         }
+        
+        .price-level-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .price-level-card:hover {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            transform: translateY(-2px);
+        }
+        
+        .status-message {
+            border-radius: 12px;
+            padding: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .status-success {
+            background-color: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        
+        .status-error {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        
+        .status-warning {
+            background-color: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #854d0e;
+        }
+        
+        .status-info {
+            background-color: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+        
         /* Style for Select2 */
         .select2-container .select2-selection--single {
-            height: 42px; /* Match tailwind input height */
-            border-radius: 0.5rem; /* Match tailwind rounded-lg */
-            border: 1px solid #d1d5db; /* Match tailwind border-gray-300 */
+            height: 48px; /* Match custom input height */
+            border-radius: 12px; /* Match custom input border radius */
+            border: 2px solid #e5e7eb; /* Match custom input border */
+            background-color: #f9fafb;
         }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 40px;
-            padding-left: 12px;
+            line-height: 46px;
+            padding-left: 16px;
+            font-size: 16px;
+            color: #374151;
         }
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 40px;
+            height: 46px;
+            right: 8px;
         }
         .select2-container--open .select2-dropdown {
-            border-radius: 0.5rem;
-            border-color: #3b82f6;
+            border-radius: 12px;
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary-color);
+        }
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        
+        /* Equal height columns */
+        .equal-height-columns {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -1rem;
+        }
+        
+        .equal-height-columns > [class*='w-'] {
+            display: flex;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .equal-height-columns .form-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .equal-height-columns {
+                flex-direction: column;
+            }
+            
+            .equal-height-columns > [class*='w-'] {
+                width: 100%;
+                padding: 0 1rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-card {
+                padding: 1.25rem;
+            }
+            
+            .equal-height-columns {
+                margin: 0 -0.5rem;
+            }
+            
+            .equal-height-columns > [class*='w-'] {
+                padding: 0 0.5rem;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Form container adjustments */
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .form-container:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="flex items-center justify-between">
+    <header class="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center">
-                    <i class="fas fa-plus-circle text-blue-600 mr-3 text-2xl"></i>
-                    <h1 class="text-3xl font-bold text-gray-900">Tambah Item Baru</h1>
+                    <div class="bg-blue-100 p-3 rounded-xl mr-4">
+                        <i class="fas fa-plus-circle text-blue-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Tambah Item Baru</h1>
+                        <p class="text-gray-600 text-sm">Lengkapi informasi item dan harga</p>
+                    </div>
                 </div>
-                <div class="flex gap-4">
-                    <a href="listv2.php" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to List
+                <div class="flex flex-wrap gap-3">
+                    <a href="listv2.php" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
                     </a>
-                    <a href="../index.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    <a href="../index.php" class="btn-primary">
                         <i class="fas fa-home mr-2"></i>Dashboard
                     </a>
                 </div>
@@ -148,140 +399,155 @@ if ($units_json) {
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <!-- Form Item -->
-            <div class="form-container p-6">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-box text-blue-600 mr-2"></i>
-                    <h2 class="text-xl font-semibold text-gray-900">Data Item</h2>
-                </div>
-                
-                <form id="itemForm" class="space-y-4">
-                    <div>
-                        <label for="kodeBarang" class="block text-sm font-medium text-gray-700 mb-2">Kode Barang</label>
-                        <input type="text" id="kodeBarang" name="no" required 
-                               placeholder="Masukkan kode barang"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <div class="equal-height-columns -mx-4">
+            <div class="px-4 mb-8 w-full lg:w-1/2">
+                <div class="form-card p-6 h-full flex flex-col">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-box text-blue-600"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900">Informasi Item</h2>
                     </div>
                     
-                    <div>
-                        <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                        <select id="kategori" name="itemCategoryName" required
-                                class="w-full">
-                            <option value=""></option>
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?php echo htmlspecialchars($category['name']); ?>">
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </option>
+                    <form id="itemForm" class="space-y-5 flex-grow flex flex-col">
+                        <div>
+                            <label for="kodeBarang" class="block text-sm font-semibold text-gray-700 mb-2">Kode Barang *</label>
+                            <input type="text" id="kodeBarang" name="no" required 
+                                   placeholder="Masukkan kode barang"
+                                   class="input-field">
+                        </div>
+                        
+                        <div>
+                            <label for="kategori" class="block text-sm font-semibold text-gray-700 mb-2">Kategori *</label>
+                            <select id="kategori" name="itemCategoryName" required
+                                    class="w-full">
+                                <option value="">Pilih kategori</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo htmlspecialchars($category['name']); ?>">
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="namaBarang" class="block text-sm font-semibold text-gray-700 mb-2">Nama Barang *</label>
+                            <input type="text" id="namaBarang" name="name" required
+                                   placeholder="Masukkan nama barang"
+                                   class="input-field">
+                        </div>
+                        
+                        <div>
+                            <label for="satuan" class="block text-sm font-semibold text-gray-700 mb-2">Satuan *</label>
+                            <select id="satuan" name="unit1Name" required
+                                    class="w-full">
+                                <option value="">Pilih satuan</option>
+                                <?php foreach ($units as $unit): ?>
+                                    <option value="<?php echo htmlspecialchars($unit['name']); ?>">
+                                        <?php echo htmlspecialchars($unit['name']); ?>
+                                    </option>
                             <?php endforeach; ?>
-                        </select>
-                    </div>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div>
+                                <label for="aktifSN" class="block text-sm font-semibold text-gray-700">Aktif S/N</label>
+                                <p class="text-gray-600 text-sm mt-1">Aktifkan serial number untuk item ini</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span id="snStatus" class="text-sm font-medium text-gray-600">Tidak Aktif</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="aktifSN" name="manageSN">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto pt-4">
+                            <button type="submit" id="saveItemBtn" 
+                                    class="btn-primary w-full">
+                                <i class="fas fa-save mr-2"></i>SIMPAN ITEM & HARGA
+                            </button>
+                        </div>
+                    </form>
                     
-                    <div>
-                        <label for="namaBarang" class="block text-sm font-medium text-gray-700 mb-2">Nama Barang</label>
-                        <input type="text" id="namaBarang" name="name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div>
-                        <label for="satuan" class="block text-sm font-medium text-gray-700 mb-2">Satuan</label>
-                        <select id="satuan" name="unit1Name" required
-                                class="w-full">
-                            <option value=""></option>
-                            <?php foreach ($units as $unit): ?>
-                                <option value="<?php echo htmlspecialchars($unit['name']); ?>">
-                                    <?php echo htmlspecialchars($unit['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <label for="aktifSN" class="text-sm font-medium text-gray-700">Aktif S/N</label>
-                        <div class="flex items-center gap-3">
-                            <span id="snStatus" class="text-sm text-gray-600">False</span>
-                            <label class="switch">
-                                <input type="checkbox" id="aktifSN" name="manageSN">
-                                <span class="slider"></span>
-                            </label>
+                    <div id="itemLoading" class="hidden mt-6 text-center">
+                        <div class="inline-flex items-center px-6 py-3 bg-blue-50 text-blue-700 rounded-xl">
+                            <i class="fas fa-spinner fa-spin mr-3"></i>
+                            <span>Menyimpan item...</span>
                         </div>
                     </div>
                     
-                    <button type="submit" id="saveItemBtn" 
-                            class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">
-                        <i class="fas fa-save mr-2"></i>SAVE ITEM & PRICE LEVELS
-                    </button>
-                </form>
-                
-                <div id="itemLoading" class="hidden mt-4 text-center">
-                    <div class="inline-flex items-center px-4 py-2 text-blue-600">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                        Saving item...
-                    </div>
+                    <div id="itemStatus" class="hidden mt-6"></div>
                 </div>
-                
-                <div id="itemStatus" class="hidden mt-4 p-4 rounded-lg"></div>
             </div>
             
-            <!-- Form Price Levels -->
-            <div class="form-container p-6">
-                <div class="flex items-center mb-6">
-                    <i class="fas fa-tags text-orange-600 mr-2"></i>
-                    <h2 class="text-xl font-semibold text-gray-900">Price Levels</h2>
+            <div class="px-4 mb-8 w-full lg:w-1/2">
+                <div class="form-card p-6 h-full flex flex-col">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-orange-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-tags text-orange-600"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900">Level Harga</h2>
+                    </div>
+                    
+                    <div class="flex-grow overflow-y-auto pr-2 -mr-2 max-h-96">
+                        <div class="space-y-4">
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 1</label>
+                                <input type="text" id="price1" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 2</label>
+                                <input type="text" id="price2" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 3</label>
+                                <input type="text" id="price3" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 4</label>
+                                <input type="text" id="price4" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 5</label>
+                                <input type="text" id="price5" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 6</label>
+                                <input type="text" id="price6" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                            
+                            <div class="price-level-card p-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga Level 7</label>
+                                <input type="text" id="price7" value="0" 
+                                       class="price-input input-field">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 rounded-xl flex-shrink-0">
+                        <h3 class="font-semibold text-blue-800 mb-2">Petunjuk</h3>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• Masukkan harga tanpa titik atau koma</li>
+                            <li>• Harga akan diformat otomatis saat Anda mengetik</li>
+                            <li>• Harga 0 tidak akan disimpan</li>
+                        </ul>
+                    </div>
                 </div>
-                
-                <div class="space-y-4">
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 1</label>
-                        <input type="text" id="price1" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 2</label>
-                        <input type="text" id="price2" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 3</label>
-                        <input type="text" id="price3" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 4</label>
-                        <input type="text" id="price4" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 5</label>
-                        <input type="text" id="price5" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 6</label>
-                        <input type="text" id="price6" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Level 7</label>
-                        <input type="text" id="price7" value="0" 
-                               class="price-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                </div>
-                
-                <div id="priceLoading" class="hidden mt-4 text-center">
-                    <div class="inline-flex items-center px-4 py-2 text-orange-600">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                        Saving price levels...
-                    </div>
-                </div>
-                
-                <div id="priceStatus" class="hidden mt-4 p-4 rounded-lg"></div>
             </div>
         </div>
     </main>
@@ -296,17 +562,19 @@ if ($units_json) {
         let savedItemNo = null;
 
         $(document).ready(function() {
-            // Initialize Select2
+            // Initialize Select2 with enhanced styling
             $('#kategori').select2({
-                placeholder: "Pilih atau cari kategori",
+                placeholder: "Pilih atau cari kategori...",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                theme: "default"
             });
 
             $('#satuan').select2({
-                placeholder: "Pilih atau cari satuan",
+                placeholder: "Pilih atau cari satuan...",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                theme: "default"
             });
 
             // Setup number formatting untuk price inputs
@@ -315,14 +583,52 @@ if ($units_json) {
             priceInputs.forEach(id => {
                 const input = document.getElementById(id);
                 
+                // Format saat input diketik
                 input.addEventListener('input', function() {
                     formatNumber(this);
                 });
                 
+                // Format saat input kehilangan fokus
                 input.addEventListener('blur', function() {
                     formatNumber(this);
                 });
             });
+            
+            // Sesuaikan tinggi kolom saat halaman dimuat
+            setTimeout(adjustColumnHeights, 100);
+            window.addEventListener('resize', function() {
+                setTimeout(adjustColumnHeights, 100);
+            });
+        });
+        
+        // Fungsi untuk menyesuaikan tinggi kolom
+        function adjustColumnHeights() {
+            const leftCard = document.querySelector('.equal-height-columns > :first-child .form-card');
+            const rightCard = document.querySelector('.equal-height-columns > :last-child .form-card');
+            
+            if (leftCard && rightCard) {
+                // Reset tinggi
+                leftCard.style.height = 'auto';
+                rightCard.style.height = 'auto';
+                
+                // Dapatkan tinggi maksimum
+                const leftHeight = leftCard.offsetHeight;
+                const rightHeight = rightCard.offsetHeight;
+                const maxHeight = Math.max(leftHeight, rightHeight);
+                
+                // Terapkan tinggi yang sama
+                leftCard.style.height = maxHeight + 'px';
+                rightCard.style.height = maxHeight + 'px';
+            }
+        }
+        
+        // Panggil fungsi adjustColumnHeights saat halaman dimuat dan saat ukuran jendela berubah
+        window.addEventListener('load', function() {
+            setTimeout(adjustColumnHeights, 100);
+        });
+        
+        window.addEventListener('resize', function() {
+            setTimeout(adjustColumnHeights, 100);
         });
         
         // Number formatter untuk input price
@@ -346,7 +652,8 @@ if ($units_json) {
         // Toggle S/N status display
         document.getElementById('aktifSN').addEventListener('change', function() {
             const status = document.getElementById('snStatus');
-            status.textContent = this.checked ? 'True' : 'False';
+            status.textContent = this.checked ? 'Aktif' : 'Tidak Aktif';
+            status.className = this.checked ? 'text-sm font-medium text-green-600' : 'text-sm font-medium text-gray-600';
         });
 
         // Form submit untuk save item + price levels
@@ -364,7 +671,7 @@ if ($units_json) {
             
             try {
                 // STEP 1: Save Item
-                itemLoading.innerHTML = '<div class="inline-flex items-center px-4 py-2 text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i>Saving item...</div>';
+                itemLoading.innerHTML = '<div class="inline-flex items-center px-6 py-3 bg-blue-50 text-blue-700 rounded-xl"><i class="fas fa-spinner fa-spin mr-3"></i><span>Menyimpan item...</span></div>';
                 
                 const itemData = {
                     no: document.getElementById('kodeBarang').value,
@@ -394,9 +701,9 @@ if ($units_json) {
                 console.log(`Item saved successfully with item number: ${savedItemNo}`);
                 
                 // STEP 2: Save Price Levels
-                itemLoading.innerHTML = '<div class="inline-flex items-center px-4 py-2 text-orange-600"><i class="fas fa-spinner fa-spin mr-2"></i>Saving price levels...</div>';
+                itemLoading.innerHTML = '<div class="inline-flex items-center px-6 py-3 bg-orange-50 text-orange-700 rounded-xl"><i class="fas fa-spinner fa-spin mr-3"></i><span>Menyimpan harga...</span></div>';
                 
-                                const prices = [
+                const prices = [
                     { id: '50', price: parseNumber(document.getElementById('price1').value) },
                     { id: '200', price: parseNumber(document.getElementById('price2').value) },
                     { id: '250', price: parseNumber(document.getElementById('price3').value) },
@@ -414,7 +721,7 @@ if ($units_json) {
                     try {
                         // Skip jika price = 0 atau kosong, tapi catat sebagai skipped
                         if (priceLevel.price === '0' || priceLevel.price === '' || priceLevel.price === 0) {
-                            results.push(`Level ${priceLevel.id}: ⏭️ Skipped (price = 0)`);
+                            results.push(`Level ${priceLevel.id}: ⏭️ Dilewati (harga = 0)`);
                             continue;
                         }
                         
@@ -440,7 +747,7 @@ if ($units_json) {
                         
                         if (priceResult.success) {
                             successCount++;
-                            results.push(`Level ${priceLevel.id}: ✅ Success`);
+                            results.push(`Level ${priceLevel.id}: ✅ Berhasil`);
                         } else {
                             results.push(`Level ${priceLevel.id}: ❌ ${priceResult.message}`);
                         }
@@ -458,24 +765,24 @@ if ($units_json) {
                 const totalSkipped = 7 - totalAttempted;
                 
                 // Show detailed results
-                let detailsHtml = '<div class="mt-3 text-sm"><strong>Details:</strong><br>' + results.join('<br>') + '</div>';
+                let detailsHtml = '<div class="mt-3 text-sm"><strong>Detail:</strong><br>' + results.join('<br>') + '</div>';
                 
                 if (totalAttempted === 0) {
                     // Hanya item yang disimpan, tidak ada price level
-                    itemStatus.className = 'mt-4 p-4 rounded-lg bg-green-100 border border-green-200 text-green-800';
-                    itemStatus.innerHTML = `<i class="fas fa-check-circle mr-2"></i>Item berhasil disimpan! (Semua price levels = 0, tidak disimpan) Mengalihkan ke daftar item...` + detailsHtml;
+                    itemStatus.className = 'status-message status-success';
+                    itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item berhasil disimpan! (Semua harga = 0, tidak disimpan) Mengalihkan ke daftar item...` + detailsHtml;
                 } else if (successCount === totalAttempted) {
                     // Semua berhasil
-                    itemStatus.className = 'mt-4 p-4 rounded-lg bg-green-100 border border-green-200 text-green-800';
-                    itemStatus.innerHTML = `<i class="fas fa-check-circle mr-2"></i>Item & semua price levels berhasil disimpan! (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                    itemStatus.className = 'status-message status-success';
+                    itemStatus.innerHTML = `<i class="fas fa-check-circle"></i>Item & semua harga berhasil disimpan! (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
                 } else if (successCount > 0) {
                     // Sebagian berhasil
-                    itemStatus.className = 'mt-4 p-4 rounded-lg bg-yellow-100 border border-yellow-200 text-yellow-800';
-                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>Item berhasil, sebagian price levels berhasil (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                    itemStatus.className = 'status-message status-warning';
+                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, sebagian harga berhasil (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
                 } else {
                     // Item berhasil tapi price level gagal semua
-                    itemStatus.className = 'mt-4 p-4 rounded-lg bg-yellow-100 border border-yellow-200 text-yellow-800';
-                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>Item berhasil, price levels gagal (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
+                    itemStatus.className = 'status-message status-warning';
+                    itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Item berhasil, harga gagal (${successCount}/${totalAttempted}) Mengalihkan ke daftar item...` + detailsHtml;
                 }
                 
                 itemStatus.classList.remove('hidden');
@@ -483,17 +790,19 @@ if ($units_json) {
                 // Auto redirect ke listv2.php setelah sukses
                 setTimeout(() => {
                     window.location.href = 'listv2.php';
-                }, 2000); // Redirect setelah 2 detik
+                }, 3000); // Redirect setelah 3 detik
                 
             } catch (error) {
-                itemStatus.className = 'mt-4 p-4 rounded-lg bg-red-100 border border-red-200 text-red-800';
-                itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>Error: ${error.message}`;
+                itemStatus.className = 'status-message status-error';
+                itemStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i>Error: ${error.message}`;
                 itemStatus.classList.remove('hidden');
             }
             
             // Re-enable button dan hide loading
             saveBtn.disabled = false;
-            itemLoading.classList.add('hidden');
+            setTimeout(() => {
+                itemLoading.classList.add('hidden');
+            }, 1000);
         });
     </script>
 </body>
