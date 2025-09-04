@@ -65,17 +65,17 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
 <body class="bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:py-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div class="flex items-center">
                     <i class="fas fa-box text-blue-600 mr-3 text-2xl"></i>
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Daftar Barang</h1>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <a href="new_item.php" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                    <a href="new_item.php" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap text-sm sm:text-base">
                         <i class="fas fa-plus mr-2"></i>Add New Item
                     </a>
-                    <a href="../index.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">
+                    <a href="../index.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg whitespace-nowrap text-sm sm:text-base">
                         <i class="fas fa-home mr-2"></i>Dashboard
                     </a>
                 </div>
@@ -84,7 +84,7 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+    <main class="max-w-7xl mx-auto px-4 py-4 sm:py-6">
         <div class="bg-white rounded-lg shadow p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <h2 class="text-xl font-semibold">Data Barang</h2>
@@ -92,43 +92,47 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
                 <!-- Filter Form -->
                 <div class="w-full sm:w-auto">
                     <form method="GET" class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3" id="filterForm">
-                        <div class="flex items-center gap-2">
-                            <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Dari:</label>
-                            <input type="date" 
-                                   name="start_picker" 
-                                   id="start_picker"
-                                   value="<?php 
-                                   if (!empty($startDate)) {
-                                       $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
-                                       echo $startFormatted ? $startFormatted->format('Y-m-d') : '';
-                                   }
-                                   ?>"
-                                   class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <div class="flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Dari:</label>
+                                <input type="date" 
+                                       name="start_picker" 
+                                       id="start_picker"
+                                       value="<?php 
+                                       if (!empty($startDate)) {
+                                           $startFormatted = DateTime::createFromFormat('d/m/Y', $startDate);
+                                           echo $startFormatted ? $startFormatted->format('Y-m-d') : '';
+                                       }
+                                       ?>"
+                                       class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Sampai:</label>
+                                <input type="date" 
+                                       name="end_picker" 
+                                       id="end_picker"
+                                       value="<?php 
+                                       if (!empty($endDate)) {
+                                           $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
+                                           echo $endFormatted ? $endFormatted->format('Y-m-d') : '';
+                                       }
+                                       ?>"
+                                       class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
                         </div>
                         
                         <div class="flex items-center gap-2">
-                            <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Sampai:</label>
-                            <input type="date" 
-                                   name="end_picker" 
-                                   id="end_picker"
-                                   value="<?php 
-                                   if (!empty($endDate)) {
-                                       $endFormatted = DateTime::createFromFormat('d/m/Y', $endDate);
-                                       echo $endFormatted ? $endFormatted->format('Y-m-d') : '';
-                                   }
-                                   ?>"
-                                   class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit" name="action" value="filter_date" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap">
+                                <i class="fas fa-filter mr-1"></i>Filter Tanggal
+                            </button>
+                            
+                            <?php if (!empty($startDate) || !empty($endDate)): ?>
+                                <a href="listv2.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap">
+                                    <i class="fas fa-times mr-1"></i>Reset
+                                </a>
+                            <?php endif; ?>
                         </div>
-                        
-                        <button type="submit" name="action" value="filter_date" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap">
-                            <i class="fas fa-filter mr-1"></i>Filter Tanggal
-                        </button>
-                        
-                        <?php if (!empty($startDate) || !empty($endDate)): ?>
-                            <a href="listv2.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm whitespace-nowrap">
-                                <i class="fas fa-times mr-1"></i>Reset
-                            </a>
-                        <?php endif; ?>
                     </form>
                 </div>
             </div>
@@ -151,24 +155,26 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
             <?php if (!empty($items)): ?>
                 <!-- Quick Filter Examples -->
                 <div class="mb-4 flex flex-wrap gap-2">
-                    <span class="text-sm text-gray-600 mr-2">Filter cepat:</span>
-                    <button type="button" data-days="0" class="quick-filter text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 cursor-pointer whitespace-nowrap">
-                        Hari ini
-                    </button>
-                    <button type="button" data-days="7" class="quick-filter text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 cursor-pointer whitespace-nowrap">
-                        7 hari terakhir
-                    </button>
-                    <button type="button" data-days="30" class="quick-filter text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 cursor-pointer whitespace-nowrap">
-                        30 hari terakhir
-                    </button>
+                    <span class="text-sm text-gray-600">Filter cepat:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" data-days="0" class="quick-filter text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 cursor-pointer whitespace-nowrap">
+                            Hari ini
+                        </button>
+                        <button type="button" data-days="7" class="quick-filter text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 cursor-pointer whitespace-nowrap">
+                            7 hari terakhir
+                        </button>
+                        <button type="button" data-days="30" class="quick-filter text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 cursor-pointer whitespace-nowrap">
+                            30 hari terakhir
+                        </button>
+                    </div>
                 </div>
                 <!-- Card Layout -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <?php 
                     $noUrut = 1;
                     foreach ($items as $item): ?>
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                            <div class="p-5">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                            <div class="p-4 flex-grow">
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="min-w-0">
                                         <h3 class="text-lg font-bold text-gray-900 truncate" title="<?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?>"><?php echo htmlspecialchars($item['name'] ?? 'N/A'); ?></h3>
@@ -250,7 +256,9 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
                                         </span>
                                     </div>
                                 </div>
-                                
+                            </div>
+                            
+                            <div class="px-4 pb-4">
                                 <div class="flex justify-between gap-2">
                                     <button onclick="showPriceLevels(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars($item['name'], ENT_QUOTES); ?>')" 
                                         class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-800 py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
@@ -321,11 +329,11 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
     </script>
 
     <!-- Modal untuk Price Levels -->
-    <div id="priceLevelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div id="priceLevelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-900">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between p-4 sm:p-6 border-b">
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
                         <i class="fas fa-tags text-orange-600 mr-2"></i>
                         Price Levels - <span id="modalItemName">Loading...</span>
                     </h3>
@@ -334,7 +342,7 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
                     </button>
                 </div>
                 
-                <div class="p-6">
+                <div class="p-4 sm:p-6 flex-grow overflow-y-auto">
                     <div id="priceLevelLoading" class="text-center py-8">
                         <i class="fas fa-spinner fa-spin text-blue-600 text-2xl mb-2"></i>
                         <p class="text-gray-600">Loading price levels...</p>
@@ -559,10 +567,12 @@ if ($action == 'filter_date' && !empty($startDate) && !empty($endDate)) {
         }
 
         // Close modal ketika klik outside
-        document.getElementById('priceLevelModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePriceLevelModal();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('priceLevelModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePriceLevelModal();
+                }
+            });
         });
     </script>
 </body>
