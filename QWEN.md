@@ -420,3 +420,106 @@ $postData = [
 ];
 
 pastikan yang dibawa manageSN
+
+Perintah 22:
+salesinvoice/new_invoice.php kemudian detail item kemudian input serial, muncul modal
+kemudian didalam modal bagian warehouse itu isinya 'Warehouse Utama'?
+ganti dengan nilai default yang ada di end point berikut
+
+http://localhost/nuansa/warehouse/listwarehouse.php
+{
+"success": true,
+"message": "Data warehouse berhasil diambil",
+"data": {
+"s": true,
+"d": [
+{
+"defaultWarehouse": false,
+"scrapWarehouse": false,
+"address": {
+"zipCode": "",
+"country": "Indonesia",
+"address": "Jl. Untung Suropati No.30\nSamarinda Kalimantan Timur\nIndonesia",
+"province": "Kalimantan Timur",
+"city": "Samarinda",
+"street": "Jl. Untung Suropati No.30",
+"name": "Matos Gudang",
+"concatFullAddress": "Jl. Untung Suropati No.30 Samarinda Kalimantan Timur Indonesia",
+"picMobileNo": null,
+"picName": null,
+"id": 200
+},
+"locationId": 200,
+"optLock": 1,
+"name": "Matos Gudang",
+"description": null,
+"pic": null,
+"id": 100,
+"suspended": false
+},
+{
+"defaultWarehouse": true,
+"scrapWarehouse": false,
+"address": {
+"zipCode": "",
+"country": "Indonesia",
+"address": "Jl. P. Suryanata SCB\nSamarinda Kalimantan Timur\nIndonesia",
+"province": "Kalimantan Timur",
+"city": "Samarinda",
+"street": "Jl. P. Suryanata SCB",
+"name": "Pusat - Suryanata",
+"concatFullAddress": "Jl. P. Suryanata SCB Samarinda Kalimantan Timur Indonesia",
+"picMobileNo": null,
+"picName": null,
+"id": 52
+},
+"locationId": 52,
+"optLock": 2,
+"name": "Pusat - Suryanata",
+"description": null,
+"pic": null,
+"id": 50,
+"suspended": false
+}
+],
+"sp": {
+"page": 1,
+"sort": null,
+"pageSize": 25,
+"pageCount": 1,
+"rowCount": 2,
+"start": 0,
+"limit": null
+}
+},
+"timestamp": "2025-09-06 09:54:10"
+}
+ketika tambah serial misal 50001
+kemudian jika stok tidak terdapat di default akan muncul alert berikut
+Serial number "50001" ditemukan di warehouse "Matos Gudang", bukan di "Warehouse Utama".
+
+maka buat dialog yes/no 'Apakah ingin pakai stok Matos Gudang?'
+yes melanjutkan. dan masuk di table dibawahnya.
+
+perintah 23.
+
+sudah benar default warehouse tetapi saat saya tambah data serial muncul
+Serial number "50001" ditemukan di warehouse "Matos Gudang", bukan di "Pusat - Suryanata".
+harusnya beri pilihan yes no agar mimilih warehouse sesuai dengan serial number
+
+perintah 24
+createSalesInvoice() tidak ada mari dibuat
+
+berikut endpoint /api/sales-invoice/save.do
+berikut bodynya yang saya ambil dr post man code http
+
+POST /accurate/api/sales-invoice/save.do HTTP/1.1
+Host: zeus.accurate.id
+Content-Type: application/x-www-form-urlencoded
+X-Session-ID: 6d5cd7c5-092b-497c-b29a-d9105b1f7173
+Authorization: Bearer 10c4c410-200a-4ed7-80ee-cacc865e5054
+Content-Length: 382
+
+customerNo=C.00002&detailItem%5B0%5D.itemNo=100001&detailItem%5B0%5D.unitPrice=18150000&detailItem%5B0%5D.detailSerialNumber%5B0%5D.serialNumberNo=8993&detailItem%5B0%5D.warehouseName=Pusat%20-%20Suryanata&branchId=50&detailItem%5B0%5D.quantity=1&detailItem%5B0%5D.detailSerialNumber%5B0%5D.quantity=1&paymentTerm=&taxable=&inclusiveTax=&toAddress=&description=&transDate=&shipDate=
+
+abaikan valuenya. yang penting keyfieldnya , perhatikan juga header parameternya

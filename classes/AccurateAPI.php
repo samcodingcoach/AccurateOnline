@@ -1580,7 +1580,7 @@ class AccurateAPI {
             'itemType' => $itemData['itemType'] ?? 'INVENTORY',
             'name' => $itemData['name'],
             'unit1Name' => $itemData['unit1Name'],
-            'manageSN' => 'true',
+            'manageSN' => $itemData['manageSN'] ? 'true' : 'false',
             'serialNumberType' => 'UNIQUE'
         ];
 
@@ -1922,6 +1922,59 @@ class AccurateAPI {
         
         return $this->makeRequest($url, 'GET');
     }
+    
+    /**
+     * Create sales invoice
+     * @param array $invoiceData Invoice data to save
+     * @return array Response from API
+     */
+    public function createSalesInvoice($invoiceData) {
+        // Validasi data required fields
+        $requiredFields = ['customerNo', 'branchId'];
+        foreach ($requiredFields as $field) {
+            if (!isset($invoiceData[$field]) || empty($invoiceData[$field])) {
+                return [
+                    'success' => false,
+                    'error' => "Field {$field} is required",
+                    'data' => null
+                ];
+            }
+        }
+        
+        // Check for detail items
+        $hasItems = false;
+        foreach ($invoiceData as $key => $value) {
+            if (strpos($key, 'detailItem') === 0 && strpos($key, 'itemNo') !== false) {
+                $hasItems = true;
+                break;
+            }
+        }
+        
+        if (!$hasItems) {
+            return [
+                'success' => false,
+                'error' => 'At least one item is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/sales-invoice/save.do';
+        
+        // Prepare data for API - use the exact format that works
+        $postData = [];
+        
+        // Copy all data directly - the format is already correct from the frontend
+        foreach ($invoiceData as $key => $value) {
+            $postData[$key] = $value;
+        }
+        
+        $headers = [
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
+
+        return $this->makeRequest($url, 'POST', http_build_query($postData), $headers);
+    }
 
 }
+
 ?>

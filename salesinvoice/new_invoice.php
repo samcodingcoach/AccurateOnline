@@ -995,7 +995,7 @@ if ($showDetails && $so_id) {
         let serialData = [];
         
         // Storage untuk menyimpan data serial per item
-        let itemSerialData = {};
+        let itemSerialData = {}; // Will store {itemId: {serials: [...], warehouse: "..."}}
 
         // Tab switching function
         function switchTab(tabName) {
@@ -1034,28 +1034,95 @@ if ($showDetails && $so_id) {
             // Improved warehouse name handling with fallback
             if (warehouseName && warehouseName.trim() !== '') {
                 currentWarehouseName = warehouseName.trim();
+                // Update modal with known warehouse name
+                document.getElementById('modalItemName').textContent = itemName;
+                document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                document.getElementById('modalQuantity').textContent = quantity;
+                document.getElementById('maxQuantity').textContent = quantity;
+                document.getElementById('serialModal').style.display = 'block';
+                
+                console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
+                
+                // Load existing data for this item if available
+                loadDataForItem(itemId);
             } else {
                 // Fallback: try to get warehouse name from the sales order data
                 const soDetails = <?php echo json_encode($salesOrderDetail['detailItem'] ?? []); ?>;
                 const currentItem = soDetails.find(item => item.id == itemId);
-                currentWarehouseName = (currentItem && currentItem.warehouse && currentItem.warehouse.name) 
+                let warehouseFromSO = (currentItem && currentItem.warehouse && currentItem.warehouse.name) 
                     ? currentItem.warehouse.name 
-                    : 'Warehouse Utama'; // Default fallback
+                    : null;
+                
+                if (warehouseFromSO) {
+                    currentWarehouseName = warehouseFromSO;
+                    // Update modal with known warehouse name
+                    document.getElementById('modalItemName').textContent = itemName;
+                    document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                    document.getElementById('modalQuantity').textContent = quantity;
+                    document.getElementById('maxQuantity').textContent = quantity;
+                    document.getElementById('serialModal').style.display = 'block';
+                    
+                    console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
+                    
+                    // Load existing data for this item if available
+                    loadDataForItem(itemId);
+                } else {
+                    // Need to fetch default warehouse from API
+                    fetch('../warehouse/listwarehouse.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.data && data.data.d) {
+                                // Find the default warehouse (where defaultWarehouse is true)
+                                const defaultWarehouse = data.data.d.find(warehouse => warehouse.defaultWarehouse === true);
+                                currentWarehouseName = defaultWarehouse ? defaultWarehouse.name : 'Warehouse Utama';
+                            } else {
+                                currentWarehouseName = 'Warehouse Utama';
+                            }
+                            
+                            // Update modal with fetched warehouse name
+                            document.getElementById('modalItemName').textContent = itemName;
+                            document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                            document.getElementById('modalQuantity').textContent = quantity;
+                            document.getElementById('maxQuantity').textContent = quantity;
+                            document.getElementById('serialModal').style.display = 'block';
+                            
+                            console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
+                            
+                            // Load existing data for this item if available
+                            loadDataForItem(itemId);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching warehouse data:', error);
+                            currentWarehouseName = 'Warehouse Utama';
+                            
+                            // Update modal with fallback warehouse name
+                            document.getElementById('modalItemName').textContent = itemName;
+                            document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                            document.getElementById('modalQuantity').textContent = quantity;
+                            document.getElementById('maxQuantity').textContent = quantity;
+                            document.getElementById('serialModal').style.display = 'block';
+                            
+                            console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
+                            
+                            // Load existing data for this item if available
+                            loadDataForItem(itemId);
+                        });
+                }
             }
-            
-            document.getElementById('modalItemName').textContent = itemName;
-            document.getElementById('modalWarehouse').textContent = currentWarehouseName || 'Tidak diketahui';
-            document.getElementById('modalQuantity').textContent = quantity;
-            document.getElementById('maxQuantity').textContent = quantity;
-            document.getElementById('serialModal').style.display = 'block';
-            
-            console.log('Opening serial modal for item:', itemId, 'warehouse:', currentWarehouseName);
-            
+        }
+        
+        function loadDataForItem(itemId) {
             // Load existing data for this item if available
-            if (itemSerialData[itemId]) {
-                serialData = [...itemSerialData[itemId]]; // Copy existing data
+            if (itemSerialData[itemId] && itemSerialData[itemId].serials) {
+                serialData = [...itemSerialData[itemId].serials]; // Copy existing data
                 // Set counter to continue from last number
                 serialCounter = serialData.length > 0 ? Math.max(...serialData.map(item => item.no)) + 1 : 1;
+                
+                // Set warehouse name if available
+                if (itemSerialData[itemId].warehouse) {
+                    currentWarehouseName = itemSerialData[itemId].warehouse;
+                    document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                }
             } else {
                 // Reset data for new item
                 serialCounter = 1;
@@ -1073,8 +1140,12 @@ if ($showDetails && $so_id) {
 
         function closeModal() {
             // Save current serial data for this item before closing
-            if (currentItemId && serialData.length > 0) {
-                itemSerialData[currentItemId] = [...serialData]; // Save copy of current data
+            if (currentItemId) {
+                // Save both serial data and warehouse information
+                itemSerialData[currentItemId] = {
+                    serials: [...serialData], // Save copy of current data
+                    warehouse: currentWarehouseName
+                };
             }
             
             document.getElementById('serialModal').style.display = 'none';
@@ -1082,8 +1153,8 @@ if ($showDetails && $so_id) {
         }
 
         function checkExistingSerials(itemId) {
-            // If we already have data for this item, don't reload from API
-            if (itemSerialData[itemId]) {
+            // Check if we already have data for this item
+            if (itemSerialData[itemId] && itemSerialData[itemId].serials) {
                 return;
             }
             
@@ -1126,16 +1197,45 @@ if ($showDetails && $so_id) {
                                     matchingItem.detailSerialNumber.forEach((detailSerial, index) => {
                                         console.log(`Processing detailSerial ${index}:`, detailSerial);
                                         
-                                        // Dalam struktur ini, serialNumber adalah object tunggal, bukan array
+                                        // Pastikan serialNumber ada dan memiliki field number
                                         if (detailSerial.serialNumber && detailSerial.serialNumber.number) {
+                                            const serialNumber = detailSerial.serialNumber.number;
+                                            const serialDate = detailSerial.serialNumber.createDateView || new Date().toLocaleDateString('id-ID');
+                                            
+                                            console.log(`Adding serial ${serialNumber} with date ${serialDate}`);
+                                            
+                                            // Tambahkan ke array serialData
                                             serialData.push({
-                                                no: serialCounter++,
-                                                serial: detailSerial.serialNumber.number,
-                                                date: detailSerial.serialNumber.updateStockDate || new Date().toLocaleDateString('id-ID')
+                                                no: serialCounter,
+                                                serial: serialNumber,
+                                                date: serialDate
                                             });
-                                            console.log('Added serial:', detailSerial.serialNumber.number);
+                                            
+                                            serialCounter++;
+                                        } else {
+                                            console.log('Skipping detailSerial entry - no valid serial number:', detailSerial);
                                         }
                                     });
+                                    
+                                    // Save loaded data to storage
+                                    if (serialData.length > 0) {
+                                        itemSerialData[currentItemId] = {
+                                            serials: [...serialData],
+                                            warehouse: currentWarehouseName
+                                        };
+                                    }
+                                    
+                                    // Update tabel dengan data yang ditemukan
+                                    updateSerialTable();
+                                    updateSerialCounter();
+                                    updateInputState();
+                                    
+                                    if (serialData.length > 0) {
+                                        console.log(`Found ${serialData.length} existing serials for item ${itemId}`);
+                                    } else {
+                                        console.log('No serial data found for item ' + itemId);
+                                    }
+                                    
                                 } else {
                                     console.log('No detailSerialNumber found or not an array');
                                 }
@@ -1144,22 +1244,6 @@ if ($showDetails && $so_id) {
                             }
                         } else {
                             console.log('No detailItem found or not an array');
-                        }
-                        
-                        // Save loaded data to storage
-                        if (serialData.length > 0) {
-                            itemSerialData[currentItemId] = [...serialData];
-                        }
-                        
-                        // Update tabel dengan data yang ditemukan
-                        updateSerialTable();
-                        updateSerialCounter();
-                        updateInputState();
-                        
-                        if (serialData.length > 0) {
-                            console.log(`Found ${serialData.length} existing serials for item ${itemId}`);
-                        } else {
-                            console.log('No serial data found for item ' + itemId);
                         }
                         
                     } else {
@@ -1256,9 +1340,41 @@ if ($showDetails && $so_id) {
                                 const expectedWarehouse = currentWarehouseName || 'Warehouse tidak diketahui';
                                 
                                 if (!currentWarehouseName || currentWarehouseName.trim() === '') {
-                                    alert(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", tapi warehouse tujuan tidak diketahui. Silakan pilih warehouse yang benar untuk item ini.`);
+                                    // Try to get default warehouse name for the message
+                                    fetch('../warehouse/listwarehouse.php')
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            let defaultWarehouseName = 'Warehouse tidak diketahui';
+                                            if (data.success && data.data && data.data.d) {
+                                                // Find the default warehouse (where defaultWarehouse is true)
+                                                const defaultWarehouse = data.data.d.find(warehouse => warehouse.defaultWarehouse === true);
+                                                defaultWarehouseName = defaultWarehouse ? defaultWarehouse.name : 'Warehouse tidak diketahui';
+                                            }
+                                            
+                                            // Show confirmation dialog to use the warehouse where serial is found
+                                            if (confirm(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", bukan di "${defaultWarehouseName}". Apakah ingin pakai stok ${foundWarehouse}?`)) {
+                                                // Update current warehouse to the found warehouse
+                                                currentWarehouseName = foundWarehouse;
+                                                document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                                                
+                                                // Add the serial since user confirmed
+                                                addValidatedSerial(serialValue);
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching warehouse data:', error);
+                                            alert(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", tapi warehouse tujuan tidak diketahui. Silakan pilih warehouse yang benar untuk item ini.`);
+                                        });
                                 } else {
-                                    alert(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", bukan di "${expectedWarehouse}".`);
+                                    // Show confirmation dialog to use the warehouse where serial is found
+                                    if (confirm(`Serial number "${serialValue}" ditemukan di warehouse "${foundWarehouse}", bukan di "${expectedWarehouse}". Apakah ingin pakai stok ${foundWarehouse}?`)) {
+                                        // Update current warehouse to the found warehouse
+                                        currentWarehouseName = foundWarehouse;
+                                        document.getElementById('modalWarehouse').textContent = currentWarehouseName;
+                                        
+                                        // Add the serial since user confirmed
+                                        addValidatedSerial(serialValue);
+                                    }
                                 }
                             } else {
                                 alert(`Serial number "${serialValue}" tidak ditemukan untuk item "${currentItemCode}" atau sudah habis.`);
@@ -1288,7 +1404,10 @@ if ($showDetails && $so_id) {
             
             // Update stored data
             if (currentItemId) {
-                itemSerialData[currentItemId] = [...serialData];
+                itemSerialData[currentItemId] = {
+                    serials: [...serialData],
+                    warehouse: currentWarehouseName
+                };
             }
             
             // Update tabel dan counter
@@ -1390,7 +1509,10 @@ if ($showDetails && $so_id) {
                 
                 // Update stored data
                 if (currentItemId) {
-                    itemSerialData[currentItemId] = [...serialData];
+                    itemSerialData[currentItemId] = {
+                        serials: [...serialData],
+                        warehouse: currentWarehouseName
+                    };
                 }
             }
         }
@@ -1403,7 +1525,10 @@ if ($showDetails && $so_id) {
             
             // Save current serial data for this item
             if (currentItemId) {
-                itemSerialData[currentItemId] = [...serialData];
+                itemSerialData[currentItemId] = {
+                    serials: [...serialData],
+                    warehouse: currentWarehouseName
+                };
             }
             
             // Close modal without showing demo message
@@ -1662,10 +1787,16 @@ if ($showDetails && $so_id) {
                     formData.append(`detailItem[${itemIndex}].itemNo`, item.item.no);
                     formData.append(`detailItem[${itemIndex}].quantity`, item.quantity);
                     formData.append(`detailItem[${itemIndex}].unitPrice`, item.unitPrice);
-                    formData.append(`detailItem[${itemIndex}].warehouseName`, item.warehouse.name);
+                    // Use warehouse from saved data if available, otherwise use existing warehouse
+                    const savedWarehouse = itemSerialData[item.id] ? itemSerialData[item.id].warehouse : null;
+                    if (savedWarehouse) {
+                        formData.append(`detailItem[${itemIndex}].warehouseName`, savedWarehouse);
+                    } else {
+                        formData.append(`detailItem[${itemIndex}].warehouseName`, item.warehouse.name);
+                    }
                     
                     // Use saved serial data if available, otherwise use existing data
-                    const savedSerialData = itemSerialData[item.id];
+                    const savedSerialData = itemSerialData[item.id] ? itemSerialData[item.id].serials : null;
                     
                     if (savedSerialData && savedSerialData.length > 0) {
                         // Use manually entered serial data
