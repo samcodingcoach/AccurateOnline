@@ -294,6 +294,68 @@ try {
 
             <!-- Menu Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 0. General Account Management -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-book text-blue-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        General Account
+                                    </dt>
+                                    <dd class="text-lg font-medium text-gray-900">
+                                        Kelola Akun Perkiraan
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="mt-5">
+                            <div class="flex space-x-2">
+                                <a href="glaccount/index.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <i class="fas fa-book mr-1"></i> List Akun
+                                </a>
+                                <button id="openGlAccountApiModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    <i class="fas fa-code mr-1"></i> API JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Branch Management -->
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-book text-blue-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                        General Account
+                                    </dt>
+                                    <dd class="text-lg font-medium text-gray-900">
+                                        Kelola Akun Perkiraan
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="mt-5">
+                            <div class="flex space-x-2">
+                                <a href="glaccount/index.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <i class="fas fa-book mr-1"></i> List Akun
+                                </a>
+                                <button id="openGlAccountApiModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    <i class="fas fa-code mr-1"></i> API JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 1. Branch Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
@@ -1312,6 +1374,16 @@ try {
             const dbSelectModal = document.getElementById('dbSelectModal');
             const openItemApiModal = document.getElementById('openItemApiModal');
             const openVendorApiModal = document.getElementById('openVendorApiModal');
+            const openGlAccountApiModal = document.getElementById('openGlAccountApiModal');
+            if (openGlAccountApiModal) {
+                openGlAccountApiModal.addEventListener('click', () => {
+                    currentApiUrl = BASE_URL + '/nuansa/glaccount/list_coa.php';
+                    apiUrl.textContent = currentApiUrl;
+                    jsonModal.classList.remove('hidden');
+                    loadJsonData();
+                });
+            }
+
             const openBranchApiModal = document.getElementById('openBranchApiModal');
             const openEmployeeApiModal = document.getElementById('openEmployeeApiModal');
             const openCustomerApiModal = document.getElementById('openCustomerApiModal');

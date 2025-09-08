@@ -569,3 +569,7 @@ saldo awal = data.d.openBalance
 kemudian ada table mumunculkan child/ nasted didalamnya ada perulangan
 No, No.COA, ,ID , Nama Akun
 X, data.d.childList[0].no ,data.d.childList[0].id , data.d.childList[0].name
+
+perintah 29
+buatlah menu seperti Branch Management - Kelola Cabang, posisinya sebelum branch management di index.php
+untuk General Account - Kelola Akun Perkiraan. ambil dari folder glaccount
