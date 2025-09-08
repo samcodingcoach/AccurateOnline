@@ -325,36 +325,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 1. Branch Management -->
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-book text-blue-500 text-2xl"></i>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">
-                                        General Account
-                                    </dt>
-                                    <dd class="text-lg font-medium text-gray-900">
-                                        Kelola Akun Perkiraan
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                        <div class="mt-5">
-                            <div class="flex space-x-2">
-                                <a href="glaccount/index.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                                    <i class="fas fa-book mr-1"></i> List Akun
-                                </a>
-                                <button id="openGlAccountApiModal" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    <i class="fas fa-code mr-1"></i> API JSON
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- 1. Branch Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
@@ -635,7 +606,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 9. Purchase Order Management -->
+                <!-- 10. Purchase Order Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -666,7 +637,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 10. Invoice PO Management -->
+                <!-- 11. Invoice PO Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -697,7 +668,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 11. Customer Management -->
+                <!-- 12. Customer Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -728,7 +699,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 12. Price Category Management -->
+                <!-- 13. Price Category Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -759,7 +730,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 13. Selling Price Management -->
+                <!-- 14. Selling Price Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -790,7 +761,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 14. Sales Order Management -->
+                <!-- 15. Sales Order Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -821,7 +792,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 14. Sales Invoice Management -->
+                <!-- 16. Sales Invoice Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -852,7 +823,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 15. Sales Receipt Management -->
+                <!-- 17. Sales Receipt Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -883,7 +854,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 16. Item Transfer Management -->
+                <!-- 18. Item Transfer Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -914,7 +885,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 17. OAuth Management -->
+                <!-- 19. OAuth Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -945,7 +916,7 @@ try {
                     </div>
                 </div>
 
-                <!-- 17. Database Management -->
+                <!-- 20. Database Management -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -984,7 +955,7 @@ try {
 
                 
 
-                <!-- 18. API Status Check -->
+                <!-- 21. API Status Check -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -1337,6 +1308,7 @@ try {
         const SALESRECEIPT_API_URL = BASE_URL + '/nuansa/salesreceipt/list_receipt.php';
         const ITEMTRANSFER_API_URL = BASE_URL + '/nuansa/itemtransfer/list_itemtransfer.php';
         const PURCHASEORDER_API_URL = BASE_URL + '/nuansa/purchaseorder/list_po.php';
+        const GLACCOUNT_API_URL = BASE_URL + '/nuansa/glaccount/list_coa.php';
         const DB_LIST_URL = BASE_URL + '/nuansa/db.php';
         const DB_OPEN_URL = BASE_URL + '/nuansa/db_open.php';
         let currentApiUrl = ITEM_API_URL;
@@ -1360,6 +1332,7 @@ try {
             { name: 'Sales Receipts API', url: SALESRECEIPT_API_URL, type: 'json' },
             { name: 'Item Transfers API', url: ITEMTRANSFER_API_URL, type: 'json' },
             { name: 'Purchase Orders API', url: PURCHASEORDER_API_URL, type: 'json' },
+            { name: 'GL Accounts API', url: GLACCOUNT_API_URL, type: 'json' },
             { name: 'Database List', url: DB_LIST_URL, type: 'json' },
             { name: 'Database Open', url: DB_OPEN_URL, type: 'json' }
         ];
