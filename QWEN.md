@@ -551,3 +551,21 @@ Authorization: Bearer XXX
 perintah 27
 pada file glaccount/index.php buatlah ui untuk menampilkan data list_coa.php
 ambil contoh di itemcategory/index.php, ikutin patternya
+
+perintah 28
+pada file glaccount/detail.php buatlah ui untuk menampilkan data detail_coa.php
+ambil contoh di itemcategory/detail.php, ikutin pattern UI nya
+
+yang di tampilkan adalah
+nomor = data.d.no
+tanggal dibuat = data.d.asOf
+akun tipe = data.d.accountTypeName
+saldo = data.d.balance
+id = data.d.id
+level = data.d.lvl
+keterangan = data.d.name
+saldo awal = data.d.openBalance
+
+kemudian ada table mumunculkan child/ nasted didalamnya ada perulangan
+No, No.COA, ,ID , Nama Akun
+X, data.d.childList[0].no ,data.d.childList[0].id , data.d.childList[0].name

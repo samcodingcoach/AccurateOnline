@@ -150,7 +150,7 @@ function build_query_string($key, $value) {
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($account['accountTypeName'] ?? 'N/A'); ?></td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right"><?php echo number_format($account['balance'] ?? 0, 0, ',', '.'); ?></td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="detail_coa.php?id=<?php echo $account['id']; ?>" class="text-blue-600 hover:text-blue-900">
+                                        <a href="detail.php?id=<?php echo $account['id']; ?>" class="text-blue-600 hover:text-blue-900">
                                             <i class="fas fa-eye mr-1"></i>Detail
                                         </a>
                                     </td>

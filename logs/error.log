@@ -916,3 +916,6 @@
 2025-09-03 13:13:31 - ERROR: API Error: Penyesuaian Harga/Diskon tidak tepat (HTTP 200) - URL: https://zeus.accurate.id/accurate/api/sellingprice-adjustment/detail.do?number=SPA.2025.09.00002 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
 2025-09-03 13:16:02 - ERROR: API Error: Penyesuaian Harga/Diskon tidak tepat (HTTP 200) - URL: https://zeus.accurate.id/accurate/api/sellingprice-adjustment/detail.do?number=SPA.2025.09.00002 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
 2025-09-08 08:23:02 - ERROR: API Error: HTTP 401 error (HTTP 401) - URL: https://account.accurate.id/oauth/check_token?token=68d28a21-31f5-4454-9d1b-91473dd7f20a in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-09-08 11:07:08 - ERROR: API Error: Akun Perkiraan tidak tepat (HTTP 200) - URL: https://zeus.accurate.id/accurate/api/glaccount/detail.do?id=16 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-09-08 11:07:14 - ERROR: API Error: Akun Perkiraan tidak tepat (HTTP 200) - URL: https://zeus.accurate.id/accurate/api/glaccount/detail.do?id=11 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
+2025-09-08 11:07:19 - ERROR: API Error: Akun Perkiraan tidak tepat (HTTP 200) - URL: https://zeus.accurate.id/accurate/api/glaccount/detail.do?id=19 in C:\xampp\htdocs\nuansa\classes\AccurateAPI.php on line 155
