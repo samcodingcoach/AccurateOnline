@@ -1975,6 +1975,32 @@ class AccurateAPI {
         return $this->makeRequest($url, 'POST', http_build_query($postData), $headers);
     }
 
+    /**
+     * Get list of GL Accounts
+     * @param array $params Parameters for filtering and pagination
+     * @return array Response from API
+     */
+    public function getGlAccountList($params = []) {
+        // Default parameters
+        $defaultParams = [
+            'sp.page' => 1,
+            'sp.pageSize' => 50,
+            'fields' => 'id,accountTypeName,balance,name,no,lvl,isParent'
+        ];
+        
+        // Merge with provided parameters
+        $params = array_merge($defaultParams, $params);
+        
+        $url = $this->host . '/accurate/api/glaccount/list.do';
+        
+        // Add parameters to URL if provided
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
 }
 
 ?>

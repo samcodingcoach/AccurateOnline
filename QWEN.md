@@ -523,3 +523,16 @@ Content-Length: 382
 customerNo=C.00002&detailItem%5B0%5D.itemNo=100001&detailItem%5B0%5D.unitPrice=18150000&detailItem%5B0%5D.detailSerialNumber%5B0%5D.serialNumberNo=8993&detailItem%5B0%5D.warehouseName=Pusat%20-%20Suryanata&branchId=50&detailItem%5B0%5D.quantity=1&detailItem%5B0%5D.detailSerialNumber%5B0%5D.quantity=1&paymentTerm=&taxable=&inclusiveTax=&toAddress=&description=&transDate=&shipDate=
 
 abaikan valuenya. yang penting keyfieldnya , perhatikan juga header parameternya
+
+perintah 25
+saya baru menambahkan scope glaccount_view, buatkan sebuah output di glaccount/list_coa.php dari endpoint berikut
+-/api/glaccount/list.do
+saya udah melakukan test di post man dan berhasil. Berikut kode dari postman
+GET /accurate/api/glaccount/list.do?fields=id,accountTypeName,balance,name,no,lvl,isParent&sp.pageSize=50 HTTP/1.1
+Host: zeus.accurate.id
+X-Session-ID: XXXX
+Content-Type: application/json
+Authorization: Bearer XXXX
+
+jika anda lupa stepnya anda bisa mencontoh di itemcategory/listcategory.php
+anda cek juga classes/AccurateAPI.php, jika menemukan yang mirip tolong dibiarkan dan buat function baru saja.
