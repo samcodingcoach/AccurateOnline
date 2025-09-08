@@ -547,3 +547,7 @@ Host: zeus.accurate.id
 X-Session-ID: XXXX
 Content-Type: application/json
 Authorization: Bearer XXX
+
+perintah 27
+pada file glaccount/index.php buatlah ui untuk menampilkan data list_coa.php
+ambil contoh di itemcategory/index.php, ikutin patternya
