@@ -21,10 +21,14 @@ if (!empty($accountType)) {
 $result = $api->getGlAccountList($params);
 $accounts = [];
 $pagination = null;
+$totalBalance = 0;
 
 if ($result['success'] && isset($result['data']['d'])) {
     $accounts = $result['data']['d'];
     $pagination = $result['data']['sp'];
+    foreach ($accounts as $account) {
+        $totalBalance += $account['balance'] ?? 0;
+    }
 }
 
 // Account types for the filter dropdown
@@ -114,10 +118,14 @@ function build_query_string($key, $value) {
             </div>
             
             <?php if (!empty($accounts)): ?>
-                <div class="mb-4">
+                <div class="mb-4 border-b pb-4">
                     <p class="text-sm text-gray-600">
                         <i class="fas fa-info-circle mr-1"></i>
                         Menampilkan <?php echo count($accounts); ?> dari total <?php echo $pagination['rowCount']; ?> akun. Halaman <?php echo $pagination['page']; ?> dari <?php echo $pagination['pageCount']; ?>.
+                    </p>
+                    <p class="text-lg font-semibold text-gray-800 mt-2">
+                        <i class="fas fa-dollar-sign mr-1"></i>
+                        Total Saldo (Halaman Ini): <?php echo number_format($totalBalance, 0, ',', '.'); ?>
                     </p>
                 </div>
                 
@@ -140,7 +148,7 @@ function build_query_string($key, $value) {
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($account['no'] ?? 'N/A'); ?></td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo htmlspecialchars($account['name'] ?? 'N/A'); ?></td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($account['accountTypeName'] ?? 'N/A'); ?></td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right"><?php echo number_format($account['balance'] ?? 0, 2, ',', '.'); ?></td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-right"><?php echo number_format($account['balance'] ?? 0, 0, ',', '.'); ?></td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="detail_coa.php?id=<?php echo $account['id']; ?>" class="text-blue-600 hover:text-blue-900">
                                             <i class="fas fa-eye mr-1"></i>Detail
