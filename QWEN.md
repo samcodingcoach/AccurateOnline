@@ -536,3 +536,14 @@ Authorization: Bearer XXXX
 
 jika anda lupa stepnya anda bisa mencontoh di itemcategory/listcategory.php
 anda cek juga classes/AccurateAPI.php, jika menemukan yang mirip tolong dibiarkan dan buat function baru saja.
+
+perintah 26
+buatkan sebuah output di glaccount/detail_coa.php dari endpoint berikut
+-/api/glaccount/detail.do
+saya sudah melakukan test di postman dan berhasil. berikut kode dari postman
+
+GET /accurate/api/glaccount/detail.do?id=66 HTTP/1.1
+Host: zeus.accurate.id
+X-Session-ID: XXXX
+Content-Type: application/json
+Authorization: Bearer XXX

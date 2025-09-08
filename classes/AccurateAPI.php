@@ -2001,6 +2001,32 @@ class AccurateAPI {
         return $this->makeRequest($url, 'GET');
     }
 
+    /**
+     * Get GL Account detail by ID
+     * @param int $id GL Account ID
+     * @return array Response from API
+     */
+    public function getGlAccountDetail($id) {
+        // Validasi ID
+        if (empty($id)) {
+            return [
+                'success' => false,
+                'message' => 'GL Account ID is required',
+                'data' => null
+            ];
+        }
+        
+        $url = $this->host . '/accurate/api/glaccount/detail.do';
+        
+        $params = [
+            'id' => $id
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
 }
 
 ?>
