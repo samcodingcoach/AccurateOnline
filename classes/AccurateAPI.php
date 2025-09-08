@@ -1985,17 +1985,23 @@ class AccurateAPI {
         $defaultParams = [
             'sp.page' => 1,
             'sp.pageSize' => 50,
-            'fields' => 'id,accountTypeName,balance,name,no,lvl,isParent'
+            'fields' => 'id,accountTypeName,balance,name,no'
         ];
         
         // Merge with provided parameters
-        $params = array_merge($defaultParams, $params);
+        $queryParams = array_merge($defaultParams, $params);
+
+        if(isset($params['type']) && !empty($params['type'])) {
+            $queryParams['filter.accountType.op'] = 'EQUAL';
+            $queryParams['filter.accountType.val'] = $params['type'];
+            unset($queryParams['type']);
+        }
         
         $url = $this->host . '/accurate/api/glaccount/list.do';
         
         // Add parameters to URL if provided
-        if (!empty($params)) {
-            $url .= '?' . http_build_query($params);
+        if (!empty($queryParams)) {
+            $url .= '?' . http_build_query($queryParams);
         }
         
         return $this->makeRequest($url, 'GET');
