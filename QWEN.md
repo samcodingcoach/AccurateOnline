@@ -622,3 +622,10 @@ Debet = data.d.detailJournalVoucher[0].debitAmount
 Kredit = data.d.detailJournalVoucher[0].creaditAmount
 
 untuk debet dan kredit jika tidak keyfieldnya ada isi 0
+
+perintah 34
+hapus departemen
+cabang itu pakai data.d.branchId dengan id coba cari nama cabangnya di endpoint
+branch/detail.php?id=?
+
+kemudian Detail Item Jurnal bagian table, buatkan sum dari total debet dan kredit dibawahnya

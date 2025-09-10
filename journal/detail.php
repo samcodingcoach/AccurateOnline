@@ -104,15 +104,20 @@ if ($result['success'] && isset($result['data']['d'])) {
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Cabang</label>
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
                                     <i class="fas fa-building text-gray-400 mr-3"></i>
-                                    <span class="text-gray-900"><?php echo htmlspecialchars($journal['branchName'] ?? 'N/A'); ?></span>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
-                                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <i class="fas fa-sitemap text-gray-400 mr-3"></i>
-                                    <span class="text-gray-900"><?php echo htmlspecialchars($journal['departmentName'] ?? 'N/A'); ?></span>
+                                    <span class="text-gray-900"><?php 
+                                        // Get branch name using branchId
+                                        $branchName = 'N/A';
+                                        if (isset($journal['branchId'])) {
+                                            // Get branch detail using API
+                                            $branchResult = $api->getBranchDetail($journal['branchId']);
+                                            if ($branchResult['success'] && isset($branchResult['data']['d']['name'])) {
+                                                $branchName = $branchResult['data']['d']['name'];
+                                            } else {
+                                                $branchName = 'Branch ID: ' . htmlspecialchars($journal['branchId']);
+                                            }
+                                        }
+                                        echo htmlspecialchars($branchName);
+                                    ?></span>
                                 </div>
                             </div>
                         </div>
@@ -140,11 +145,18 @@ if ($result['success'] && isset($result['data']['d'])) {
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akun</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Debit</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kredit</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Memo</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
-                                        <?php foreach ($journal['detailJournalVoucher'] as $index => $detail): ?>
+                                        <?php 
+                                        $totalDebit = 0;
+                                        $totalCredit = 0;
+                                        foreach ($journal['detailJournalVoucher'] as $index => $detail): 
+                                            $debitAmount = $detail['debitAmount'] ?? 0;
+                                            $creditAmount = $detail['creditAmount'] ?? 0;
+                                            $totalDebit += $debitAmount;
+                                            $totalCredit += $creditAmount;
+                                        ?>
                                             <tr class="hover:bg-gray-50">
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     <?php echo $index + 1; ?>
@@ -154,16 +166,25 @@ if ($result['success'] && isset($result['data']['d'])) {
                                                     <div class="text-gray-500 text-xs"><?php echo htmlspecialchars($detail['accountNoRef'] ?? 'N/A'); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo isset($detail['debitAmount']) ? number_format($detail['debitAmount'], 2, ',', '.') : '0,00'; ?>
+                                                    <?php echo number_format($debitAmount, 2, ',', '.'); ?>
                                                 </td>
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo isset($detail['creditAmount']) ? number_format($detail['creditAmount'], 2, ',', '.') : '0,00'; ?>
-                                                </td>
-                                                <td class="px-4 py-4 text-sm text-gray-900">
-                                                    <?php echo htmlspecialchars($detail['memo'] ?? 'N/A'); ?>
+                                                    <?php echo number_format($creditAmount, 2, ',', '.'); ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
+                                        <!-- Total Row -->
+                                        <tr class="bg-gray-50 font-semibold">
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900" colspan="2">
+                                                Total
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <?php echo number_format($totalDebit, 2, ',', '.'); ?>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <?php echo number_format($totalCredit, 2, ',', '.'); ?>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
