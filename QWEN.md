@@ -595,3 +595,30 @@ perintah 31
 lakukan hal yang sama pada perintah 30 untuk journal/detail_journal.php
 berikut endpoint nya
 api/journal-voucher/detail.do?id=300 adanya parameter id yang diperlukan
+
+perintah 32
+buat ui menampilkan output json list_journal.php
+contoh uada di /employee/index.php
+
+perintah 33
+buat ui menampilkan output json detail_journal.php
+contoh ui glaccount/detail.php?id=66
+
+berikut yang di tampilkan
+ID = data.d.transId
+NOMOR = data.d.number
+TRANSAKSI = data.d.transNumber
+KETERANGAN = data.d.description
+TANGGAL = data.d.transDateView
+ID CABANG = data.d.branchId
+TOTAL KREDIT = data.d.totalCredit
+TOTAL DEBIT = data.d.totalDebit
+TIPE TRANSAKSI = data.d.transactionTypeName
+
+kemudian dibawahnya ada table yang bersifat looping data
+Kode = data.d.detailJournalVoucher[0].accountNoRef
+Nama Perkiraan = data.d.detailJournalVoucher[0].accountNameRef
+Debet = data.d.detailJournalVoucher[0].debitAmount
+Kredit = data.d.detailJournalVoucher[0].creaditAmount
+
+untuk debet dan kredit jika tidak ada isi 0
