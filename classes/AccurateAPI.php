@@ -2033,6 +2033,32 @@ class AccurateAPI {
         return $this->makeRequest($url, 'GET');
     }
 
+    /**
+     * Get journal voucher list
+     * @param array $params Parameters for filtering and pagination
+     * @return array Response from API
+     */
+    public function getJournalVoucherList($params = []) {
+        // Default parameters
+        $defaultParams = [
+            'sp.page' => 1,
+            'sp.pageSize' => 25,
+            'fields' => 'id,number,transDate,transNumber,description'
+        ];
+        
+        // Merge with provided parameters
+        $params = array_merge($defaultParams, $params);
+        
+        $url = $this->host . '/accurate/api/journal-voucher/list.do';
+        
+        // Add parameters to URL if provided
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
 }
 
 ?>

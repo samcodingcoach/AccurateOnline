@@ -573,3 +573,20 @@ X, data.d.childList[0].no ,data.d.childList[0].id , data.d.childList[0].name
 perintah 29
 buatlah menu seperti Branch Management - Kelola Cabang, posisinya sebelum branch management di index.php
 untuk General Account - Kelola Akun Perkiraan. ambil dari folder glaccount
+
+perintah 30
+buatkan sebuah route di file journal/list_journal.php dari endpoint berikut
+GET
+api/journal-voucher/list.do
+
+anda bisa pelajari dahulu patternya di file list_itemtransfer.php
+
+dari postman saya berhasil melakukan test berikut kodenya
+
+GET /accurate/api/journal-voucher/list.do?fields=id,number,transDate,transNumber,description HTTP/1.1
+Host: zeus.accurate.id
+X-Session-ID: XXX
+Accept: application/json
+Authorization: Bearer XXX
+
+file yang perlu anda simak classes/AccurateAPI.php
