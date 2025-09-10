@@ -590,3 +590,8 @@ Accept: application/json
 Authorization: Bearer XXX
 
 file yang perlu anda simak classes/AccurateAPI.php
+
+perintah 31
+lakukan hal yang sama pada perintah 30 untuk journal/detail_journal.php
+berikut endpoint nya
+api/journal-voucher/detail.do?id=300 adanya parameter id yang diperlukan

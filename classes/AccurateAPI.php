@@ -2059,6 +2059,33 @@ class AccurateAPI {
         return $this->makeRequest($url, 'GET');
     }
 
+    /**
+     * Get journal voucher detail by ID
+     * @param int $id Journal voucher ID
+     * @return array Response from API
+     */
+    public function getJournalVoucherDetail($id) {
+        // Validasi ID required
+        if (empty($id)) {
+            return [
+                'success' => false,
+                'error' => 'Journal voucher ID is required',
+                'data' => null
+            ];
+        }
+
+        $url = $this->host . '/accurate/api/journal-voucher/detail.do';
+        
+        // Prepare parameters
+        $params = [
+            'id' => $id
+        ];
+        
+        $url .= '?' . http_build_query($params);
+        
+        return $this->makeRequest($url, 'GET');
+    }
+
 }
 
 ?>
