@@ -621,4 +621,4 @@ Nama Perkiraan = data.d.detailJournalVoucher[0].accountNameRef
 Debet = data.d.detailJournalVoucher[0].debitAmount
 Kredit = data.d.detailJournalVoucher[0].creaditAmount
 
-untuk debet dan kredit jika tidak ada isi 0
+untuk debet dan kredit jika tidak keyfieldnya ada isi 0

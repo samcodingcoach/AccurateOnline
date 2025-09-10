@@ -131,7 +131,7 @@ if ($result['success'] && isset($result['data']['d'])) {
                     <div class="mt-8 pt-6 border-t border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Item Jurnal</h3>
                         
-                        <?php if (isset($journal['detailJournal']) && is_array($journal['detailJournal']) && !empty($journal['detailJournal'])): ?>
+                        <?php if (isset($journal['detailJournalVoucher']) && is_array($journal['detailJournalVoucher']) && !empty($journal['detailJournalVoucher'])): ?>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -144,20 +144,20 @@ if ($result['success'] && isset($result['data']['d'])) {
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
-                                        <?php foreach ($journal['detailJournal'] as $index => $detail): ?>
+                                        <?php foreach ($journal['detailJournalVoucher'] as $index => $detail): ?>
                                             <tr class="hover:bg-gray-50">
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     <?php echo $index + 1; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-sm text-gray-900">
-                                                    <div class="font-medium"><?php echo htmlspecialchars($detail['account']['name'] ?? 'N/A'); ?></div>
-                                                    <div class="text-gray-500 text-xs"><?php echo htmlspecialchars($detail['account']['no'] ?? 'N/A'); ?></div>
+                                                    <div class="font-medium"><?php echo htmlspecialchars($detail['accountNameRef'] ?? 'N/A'); ?></div>
+                                                    <div class="text-gray-500 text-xs"><?php echo htmlspecialchars($detail['accountNoRef'] ?? 'N/A'); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo isset($detail['debit']) ? number_format($detail['debit'], 2, ',', '.') : '0,00'; ?>
+                                                    <?php echo isset($detail['debitAmount']) ? number_format($detail['debitAmount'], 2, ',', '.') : '0,00'; ?>
                                                 </td>
                                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?php echo isset($detail['credit']) ? number_format($detail['credit'], 2, ',', '.') : '0,00'; ?>
+                                                    <?php echo isset($detail['creditAmount']) ? number_format($detail['creditAmount'], 2, ',', '.') : '0,00'; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-sm text-gray-900">
                                                     <?php echo htmlspecialchars($detail['memo'] ?? 'N/A'); ?>
